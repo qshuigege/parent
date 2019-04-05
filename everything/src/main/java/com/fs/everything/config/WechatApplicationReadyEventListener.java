@@ -3,6 +3,7 @@ package com.fs.everything.config;
 import com.fs.everything.qywx.MyJob;
 import com.fs.everything.qywx.PullTongXunLuJob;
 import com.fs.everything.repository.UCML_UserDao;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

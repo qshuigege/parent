@@ -2,11 +2,12 @@ package com.fs.nothing.wx;
 
 import com.fs.nothing.config.WechatApplicationReadyEventListener;
 import com.fs.nothing.utils.HttpClientUtils;
-import net.sf.json.JSONObject;
+import com.fs.nothing.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class R_WX {
@@ -154,7 +155,7 @@ public class R_WX {
 		}catch (Exception e){
 			throw new Exception("R_WX.getAccessToken() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(jsonStr);
+		Map<String, Object> jo = JsonUtils.jsonToMap(jsonStr);
 		if (jo.get("errcode")!=null&&"50002".equals(jo.get("errcode").toString())) {
 			throw new Exception("R_WX.getAccessToken() get accesstoken failed-->errcode:" + jo.get("errcode") + ", errmsg:" + jo.get("errmsg"));
 		}

@@ -3,6 +3,7 @@ package com.fs.nothing.config;
 import com.fs.nothing.wx.MyJob;
 import com.fs.nothing.wx.R_WX;
 import com.fs.nothing.wx.WXUtils;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

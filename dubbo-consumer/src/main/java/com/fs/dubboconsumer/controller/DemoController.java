@@ -1,8 +1,8 @@
 package com.fs.dubboconsumer.controller;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.fs.dubboapi.DemoService;
 import com.fs.diyutils.JsonResult;
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

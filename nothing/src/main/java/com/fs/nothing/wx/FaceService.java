@@ -1,8 +1,5 @@
 package com.fs.nothing.wx;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -73,7 +70,7 @@ public class FaceService {
 			String json = httpRequest(queryUrl);
 //			System.out.println(json);
 			// 解析返回json中的Face列表
-			JSONArray jsonArray = JSONObject.fromObject(json).getJSONArray("face");
+			/*JSONArray jsonArray = JSONObject.fromObject(json).getJSONArray("face");
 			// 遍历检测到的人脸
 			for (int i = 0; i < jsonArray.size(); i++) {
 				// face
@@ -94,7 +91,8 @@ public class FaceService {
 				face.setCenterX(posObject.getJSONObject("center").getDouble("x"));
 				face.setCenterY(posObject.getJSONObject("center").getDouble("y"));
 				faceList.add(face);
-			}
+			}*/
+
 			// 将检测出的Face按从左至右的顺序排序
 			Collections.sort(faceList);
 		} catch (Exception e) {
