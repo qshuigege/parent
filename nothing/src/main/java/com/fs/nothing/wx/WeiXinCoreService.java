@@ -6,7 +6,6 @@ import com.fs.nothing.utils.HttpClientUtils;
 import com.fs.nothing.utils.JsonUtils;
 import com.fs.nothing.utils.ReusableCodes;
 import com.fs.nothing.wx.apimodel.WXAccount;
-import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -112,7 +111,7 @@ public class WeiXinCoreService {
             if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) {
                 String eventKey = requestMap.get("EventKey");
                 if (eventKey == null || "".equals(eventKey)) {//用户扫描公众号二维码并点击关注
-                    JSONObject jo = null;
+                    Map<String, Object> jo = null;
                     try {
                         jo = WXUtils.getUserInfo_JSONObject(accesstoken, requestMap.get("FromUserName"));
                     } catch (Exception e) {
@@ -126,7 +125,7 @@ public class WeiXinCoreService {
                 } else {//用户扫描带参数的二维码并点击关注
                     eventKey = eventKey.replace("qrscene_", "");//可能是微信的Bug，如果用户未关注公众号，扫描带参数的二维码，参数前会加上"qrscene_"
                     log.info("replace后二维码带的参数----------->" + eventKey);
-                    JSONObject jo = null;
+                    Map<String, Object> jo = null;
                     try {
                         jo = WXUtils.getUserInfo_JSONObject(accesstoken, requestMap.get("FromUserName"));
                     }catch (Exception e){
@@ -135,7 +134,7 @@ public class WeiXinCoreService {
                         textMessage.setContent(respContent);
                         return MessageUtil.textMessageToXml(textMessage);
                     }
-                    String unionid = jo.getString("unionid");
+                    String unionid = jo.get("unionid").toString();
                     service.addAcc(createWXAccountFromJSONObject(jo));//用户关注公众号，将该用户的信息保存到账号表（如果是用户取消关注后再次关注，一样可以直接往wxaccount表插入数据，但是会插入失败，因为openid是主键）
 
                     if(eventKey.startsWith("crm_bind_")){
@@ -161,7 +160,7 @@ public class WeiXinCoreService {
                         }
 
                     }else if (eventKey.startsWith("forlogin_")){
-                        if(service.isBinded(jo.getString("unionid"), jo.getString("openid"))){
+                        if(service.isBinded(jo.get("unionid").toString(), jo.get("openid").toString())){
                             respContent = "登录成功！";
                             //String unionid = jo.getString("unionid");
                             List<B2B_USER> orguserList = null;
@@ -189,10 +188,10 @@ public class WeiXinCoreService {
                         }
                     }else if ("0".equals(eventKey)) {
                         //用户解绑
-                        if (service.isBinded(jo.getString("unionid"), jo.getString("openid"))) {
+                        if (service.isBinded(jo.get("unionid").toString(), jo.get("openid").toString())) {
 
                             Map<String, Object> params = new HashMap<>();
-                            params.put("unionid", jo.getString("unionid"));
+                            params.put("unionid", jo.get("unionid"));
                             if (service.unbinding(params)) {
                                 respContent = "感谢关注！\n解绑成功！";
                             } else {
@@ -210,7 +209,7 @@ public class WeiXinCoreService {
                         }
                         service.addAcc(createWXAccountFromJSONObject(jo));//用户关注公众号，将该用户的信息保存到账号表
 
-                        boolean isBinded = service.isBinded(jo.getString("unionid"), jo.getString("openid"));
+                        boolean isBinded = service.isBinded(jo.get("unionid").toString(), jo.get("openid").toString());
                         if (isBinded) {//如果已经绑定
                             respContent = "感谢关注！\n您的B2B账号已经与该微信绑定过，无需再次绑定！";
                         } else {
@@ -224,7 +223,7 @@ public class WeiXinCoreService {
 								return MessageUtil.textMessageToXml(textMessage);
 							}
 							boolean b = service.binding(jo.getString("unionid"), orgid);*/
-                            boolean b = service.binding(jo.getString("unionid"), eventKey, jo.getString("openid"));
+                            boolean b = service.binding(jo.get("unionid").toString(), eventKey, jo.get("openid").toString());
                             if (b) {
                                 respContent = "感谢关注！\n您的微信已与B2B账号绑定，您现在可以通过微信扫描的方式来登录富森B2B系统！";
                             } else {
@@ -241,7 +240,7 @@ public class WeiXinCoreService {
                 String eventKey = requestMap.get("EventKey");
                 eventKey = eventKey.replace("qrscene_", "");
                 log.info("二维码带的参数----------->" + eventKey);
-                JSONObject jo = null;
+                Map<String, Object> jo = null;
                 try {
                     jo = WXUtils.getUserInfo_JSONObject(accesstoken, requestMap.get("FromUserName"));
                 }catch (Exception e){
@@ -250,7 +249,7 @@ public class WeiXinCoreService {
                     textMessage.setContent(respContent);
                     return MessageUtil.textMessageToXml(textMessage);
                 }
-                String unionid = jo.getString("unionid");
+                String unionid = jo.get("unionid").toString();
                 if(eventKey.startsWith("crm_bind_")){
                     //调用大创接口
                     log.info("调用大创接口");
@@ -275,7 +274,7 @@ public class WeiXinCoreService {
 
                 }else if(eventKey.startsWith("forlogin_")){
                     log.info("forlogin_ unionid-->"+unionid);
-                    if(service.isBinded(unionid, jo.getString("openid"))){
+                    if(service.isBinded(unionid, jo.get("openid").toString())){
                         respContent = "登录成功！";
                         List<B2B_USER> orguserList = null;
                         B2B_USER user = null;
@@ -328,7 +327,7 @@ public class WeiXinCoreService {
                     }
                 }else if ("0".equals(eventKey) || "qrscene_0".equals(eventKey)) {
                     //用户解绑
-                    if (service.isBinded(unionid, jo.getString("openid"))) {
+                    if (service.isBinded(unionid, jo.get("openid").toString())) {
 
                         Map<String, Object> params = new HashMap<>();
                         params.put("unionid", unionid);
@@ -345,7 +344,7 @@ public class WeiXinCoreService {
                     //用户绑定
                     service.addAcc(createWXAccountFromJSONObject(jo));//用户关注公众号，将该用户的信息保存到账号表
 
-                    boolean isBinded = service.isBinded(jo.getString("unionid"), jo.getString("openid"));
+                    boolean isBinded = service.isBinded(jo.get("unionid").toString(), jo.get("openid").toString());
                     if (isBinded) {//如果已经绑定
                         respContent = "您的B2B账号已经与该微信绑定，无需再次绑定！";
                     } else {
@@ -359,7 +358,7 @@ public class WeiXinCoreService {
 							return MessageUtil.textMessageToXml(textMessage);
 						}
 						boolean b = service.binding(jo.getString("unionid"), orgid);*/
-                        boolean b = service.binding(jo.getString("unionid"), eventKey, jo.getString("openid"));
+                        boolean b = service.binding(jo.get("unionid").toString(), eventKey, jo.get("openid").toString());
                         if (b) {
                             respContent = "绑定成功！\n您的微信已与B2B账号绑定，您现在可以通过微信扫描的方式来登录富森B2B系统！";
                         } else {
@@ -380,14 +379,14 @@ public class WeiXinCoreService {
                 String wodedingdan = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="+R_WX.APPID+"&redirect_uri=http%3A%2F%2F"+R_WX.DOMAIN+"%2Fgongzhonghao&response_type=code&scope=snsapi_base&state=1234567#wechat_redirect";
                 if(requestMap.get("EventKey").equals(wodedingdan)){
                     log.info("用户点击菜单“我的订单”");
-                    JSONObject jo = null;
+                    Map<String, Object> jo = null;
                     try {
                         jo = WXUtils.getUserInfo_JSONObject(accesstoken, requestMap.get("FromUserName"));
                     }catch (Exception e){
                         log.error("用户点击我的订单-->{}",e.getMessage());
                     }
-                    String unionid = jo.getString("unionid");
-                    if(!service.isBinded(unionid, jo.getString("openid"))){
+                    String unionid = jo.get("unionid").toString();
+                    if(!service.isBinded(unionid, jo.get("openid").toString())){
                         try {
                             String resultMsg = WXUtils.sendKeFuMsg(accesstoken, requestMap.get("FromUserName"), "该微信号未与富森B2B账号绑定，无法查看订单信息！");
                             log.info("发送客服消息成功-->{}",resultMsg);
@@ -449,7 +448,7 @@ public class WeiXinCoreService {
     }
 
 
-    private static WXAccount createWXAccountFromJSONObject(JSONObject jo){
+    private static WXAccount createWXAccountFromJSONObject(Map<String, Object> jo){
         WXAccount acc = new WXAccount();
         if (jo.get("subscribe") == null) {//未关注用户与公众号地一次交互信息(微信api规定，获取未关注用户的基本信息中,没有subscribe)
             acc.setSubscribe("0");
@@ -458,22 +457,22 @@ public class WeiXinCoreService {
         }
         acc.setAppid(R_WX.ORIGINAL_ID);
         acc.setCreatedate(new Date());
-        acc.setUnionid(jo.has("unionid") ? jo.getString("unionid") : "");
-        acc.setCity(jo.getString("city"));
-        acc.setCountry(jo.getString("country"));
-        acc.setGroupid(jo.getString("groupid"));
-        acc.setHeadimgurl(jo.getString("headimgurl"));
-        acc.setLanguage(jo.getString("language"));
-        acc.setNickname(jo.getString("nickname"));
-        acc.setOpenid(jo.getString("openid"));
-        acc.setProvince(jo.getString("province"));
-        acc.setRemark(jo.getString("remark"));
-        acc.setSex(jo.getString("sex"));
-        acc.setSubscribe_time(jo.getString("subscribe_time"));
-        acc.setTagid_list(jo.has("tagid_list")?jo.getString("tagid_list"):"tagid_list");
-        acc.setSubscribe_scene(jo.getString("subscribe_scene"));
-        acc.setQr_scene(jo.getString("qr_scene"));
-        acc.setQr_scene_str(jo.getString("qr_scene_str"));
+        acc.setUnionid(jo.containsKey("unionid") ? jo.get("unionid").toString() : "");
+        acc.setCity(jo.get("city").toString());
+        acc.setCountry(jo.get("country").toString());
+        acc.setGroupid(jo.get("groupid").toString());
+        acc.setHeadimgurl(jo.get("headimgurl").toString());
+        acc.setLanguage(jo.get("language").toString());
+        acc.setNickname(jo.get("nickname").toString());
+        acc.setOpenid(jo.get("openid").toString());
+        acc.setProvince(jo.get("province").toString());
+        acc.setRemark(jo.get("remark").toString());
+        acc.setSex(jo.get("sex").toString());
+        acc.setSubscribe_time(jo.get("subscribe_time").toString());
+        acc.setTagid_list(jo.containsKey("tagid_list")?jo.get("tagid_list").toString():"tagid_list");
+        acc.setSubscribe_scene(jo.get("subscribe_scene").toString());
+        acc.setQr_scene(jo.get("qr_scene").toString());
+        acc.setQr_scene_str(jo.get("qr_scene_str").toString());
         return acc;
     }
 

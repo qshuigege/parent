@@ -1,10 +1,12 @@
 package com.fs.nothing.wx;
 
 import com.fs.nothing.utils.HttpClientUtils;
+import com.fs.nothing.utils.JsonUtils;
 import com.fs.nothing.wx.apimodel.AccessTokenGZPT;
 import com.fs.nothing.wx.apimodel.AccessTokenGZPT_WY;
 import com.fs.nothing.wx.apimodel.WXUserInfo;
-import net.sf.json.JSONObject;
+
+import java.util.Map;
 
 
 public class WXUtils {
@@ -56,7 +58,7 @@ eMsv84eavHiaiceqxibJxCfHe/0",
   "tagid_list":[128,2]
 }
 	 */
-	public static JSONObject getUserInfo_JSONObject(String access_token, String openid) throws Exception{
+	public static Map<String, Object> getUserInfo_JSONObject(String access_token, String openid) throws Exception{
 		String apiUrl = "https://api.weixin.qq.com/cgi-bin/user/info?access_token="+access_token+"&lang=zh_CN&openid="+openid;
 		String jsonStr = null;
 		try {
@@ -64,7 +66,7 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("");
 		}
-		JSONObject jo = JSONObject.fromObject(jsonStr);
+		Map<String, Object> jo = JsonUtils.jsonToMap(jsonStr);
 		if (jo.get("errcode")==null){
 			return jo;
 		}else {
@@ -85,9 +87,9 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("WXUtils.getAccessTokenGZPT() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(jsonStr);
+		Map<String, Object> jo = JsonUtils.jsonToMap(jsonStr);
 		if(jo.get("errcode")==null){
-			AccessTokenGZPT obj = (AccessTokenGZPT)JSONObject.toBean(jo, AccessTokenGZPT.class);
+			AccessTokenGZPT obj = (AccessTokenGZPT)JsonUtils.jsonToPojo(jsonStr, AccessTokenGZPT.class);
 			return obj;
 		}else{
 			throw new Exception("WXUtils.getAccessTokenGZPT() get get AccessToken from wechat server failed-->errcode:"+jo.get("errcode")+", errmsg:"+jo.get("errmsg"));
@@ -106,9 +108,9 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("WXUtils.AccessTokenGZPT_WY() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(jsonStr);
+		Map<String, Object> jo = JsonUtils.jsonToMap(jsonStr);
 		if(jo.get("errcode")==null){
-			AccessTokenGZPT_WY obj = (AccessTokenGZPT_WY)JSONObject.toBean(jo, AccessTokenGZPT_WY.class);
+			AccessTokenGZPT_WY obj = (AccessTokenGZPT_WY)JsonUtils.jsonToPojo(jsonStr, AccessTokenGZPT_WY.class);
 			return obj;
 		}else{
 			throw new Exception("WXUtils.getAccessToken_WY() get get AccessToken_WY from wechat server failed-->errcode:"+jo.get("errcode")+", errmsg:"+jo.get("errmsg"));
@@ -119,7 +121,7 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 	 * 微信网页开发获取用户基本信息接口
 	 * @return JavaBean,包装了AccessToken
 	 */
-	public static JSONObject getUserinfo_WY(String access_token,String openid) throws Exception{
+	public static Map<String, Object> getUserinfo_WY(String access_token,String openid) throws Exception{
 		String apiUrl = "https://api.weixin.qq.com/sns/userinfo?access_token="+access_token+"&openid="+openid+"&lang=zh_CN";
 		String jsonStr = null;
 		try {
@@ -127,7 +129,7 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("WXUtils.getUserinfo_WY() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(jsonStr);
+		Map<String, Object> jo = JsonUtils.jsonToMap(jsonStr);
 		if (jo.get("errcode")==null) {
 			jo.remove("privilege");//待以后业务需要再改写，先不要。
 			return jo;
@@ -148,10 +150,10 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("WXUtils.getUserinfo_WY2() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(jsonStr);
+		Map<String, Object> jo = JsonUtils.jsonToMap(jsonStr);
 		if(jo.get("errcode")==null){
 			jo.remove("privilege");//待以后业务需要再改写，先不要。
-			return (WXUserInfo)JSONObject.toBean(jo, WXUserInfo.class);
+			return (WXUserInfo)JsonUtils.jsonToPojo(jsonStr, WXUserInfo.class);
 		}else{
 			throw new Exception("WXUtils.getUserinfo_WY2() get user info_WY2 from wechat server failed-->errcode:"+jo.get("errcode")+", errmsg:"+jo.get("errmsg"));
 		}
@@ -171,9 +173,9 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("WXUtils.getUserInfo() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(jsonStr);
+		Map<String, Object> jo = JsonUtils.jsonToMap(jsonStr);
 		if(jo.get("errcode")==null){
-			return (WXUserInfo)JSONObject.toBean(jo, WXUserInfo.class);
+			return (WXUserInfo)JsonUtils.jsonToPojo(jsonStr, WXUserInfo.class);
 		}else{
 			throw new Exception("WXUtils.getUserInfo() get user info from wechat server failed-->errcode:"+jo.get("errcode")+", errmsg:"+jo.get("errmsg"));
 		}
@@ -194,7 +196,7 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("WXUtils.createMenu() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(jsonStr);
+		Map<String, Object> jo = JsonUtils.jsonToMap(jsonStr);
 		if(jo.get("errcode")==null){
 			return true;
 		}else{
@@ -219,9 +221,9 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("WXUtils.addConditionalMenu() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(resultJson);
-		if (jo.has("menuid")){
-			return jo.getString("menuid");
+		Map<String, Object> jo = JsonUtils.jsonToMap(resultJson);
+		if (jo.containsKey("menuid")){
+			return jo.get("menuid").toString();
 		}else{
 			throw new Exception("WXUtils.addConditionalMenu() 创建个性化菜单失败！-->"+jo.toString());
 		}
@@ -245,7 +247,7 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		}catch (Exception e){
 			throw new Exception("WXUtils.sendKeFuMsg() httpconn exception-->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(resultJson);
+		Map<String, Object> jo = JsonUtils.jsonToMap(resultJson);
 		/*if (jo.has("menuid")){
 			return jo.getString("menuid");
 		}else{
@@ -265,11 +267,11 @@ eMsv84eavHiaiceqxibJxCfHe/0",
 		} catch (Exception e) {
 			throw new Exception("WXUtils.generateQrcode() -->"+e.getMessage());
 		}
-		JSONObject jo = JSONObject.fromObject(ticketJson);
+		Map<String, Object> jo = JsonUtils.jsonToMap(ticketJson);
 		if (jo.size() > 0 && null == jo.get("ticket")) {
-			throw new Exception("WXUtils.generateQrcode() errcode-->"+ jo.getString("errcode") +", errmsg-->"+ jo.getString("errmsg"));
+			throw new Exception("WXUtils.generateQrcode() errcode-->"+ jo.get("errcode") +", errmsg-->"+ jo.get("errmsg"));
 		}
-		ticket = jo.getString("ticket");
+		ticket = jo.get("ticket").toString();
 		return ticket;
 		//String erweimaurl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket="+ticket;
 	}

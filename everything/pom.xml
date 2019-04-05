@@ -122,11 +122,10 @@
             <version>1.60</version>
         </dependency>
         <dependency>
-            <groupId>com.fs.lib</groupId>
+            <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <!--<dependency>
+            <version>2.3.1</version>
+        </dependency>        <!--<dependency>
           <groupId>org.bouncycastle</groupId>
           <artifactId>bcprov-ext-jdk15on</artifactId>
           <version>1.60</version>

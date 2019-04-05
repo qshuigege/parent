@@ -6,7 +6,6 @@ import com.fs.nothing.utils.*;
 import com.fs.nothing.wx.*;
 import com.fs.nothing.wx.apimodel.AccessTokenGZPT_WY;
 import com.fs.nothing.wx.apimodel.WXUserInfo;
-import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -454,7 +453,7 @@ public class WXController {
                 resultMap.put("qrcodeUrl", "");
                 return resultMap;
             }
-            JSONObject jo = JSONObject.fromObject(ticketJson);
+            Map<String, Object> jo = JsonUtils.jsonToMap(ticketJson);
             if (jo.size() == 0) {
                 resultMap.put("result", "fail");
                 resultMap.put("cause", "WXController.wxBindQrcode() jo.size()==0");
@@ -466,7 +465,7 @@ public class WXController {
                 resultMap.put("result", "fail");
                 resultMap.put("cause", "WXController.wxBindQrcode() qrcode ticket is null");
                 resultMap.put("qrcodeUrl", "");
-                log.error("WXController.wxBindQrcode() errcode-->{}, errmsg-->{}", jo.has("errcode")?jo.getString("errcode"):"", jo.has("errmsg")?jo.getString("errmsg"):"");
+                log.error("WXController.wxBindQrcode() errcode-->{}, errmsg-->{}", jo.containsKey("errcode")?jo.get("errcode"):"", jo.containsKey("errmsg")?jo.get("errmsg"):"");
                 return resultMap;
             }
             ticket = jo.get("ticket").toString();
@@ -542,7 +541,7 @@ public class WXController {
                 resultMap.put("qrcodeUrl", "");
                 return resultMap;
             }
-            JSONObject jo = JSONObject.fromObject(ticketJson);
+            Map<String, Object> jo = JsonUtils.jsonToMap(ticketJson);
             if (jo.size() == 0) {
                 resultMap.put("result", "fail");
                 resultMap.put("cause", "WXController.wxUnbindQrcode() jo.size()==0");
@@ -554,7 +553,7 @@ public class WXController {
                 resultMap.put("result", "fail");
                 resultMap.put("cause", "WXController.wxUnbindQrcode() qrcode ticket is null");
                 resultMap.put("qrcodeUrl", "");
-                log.error("WXController.wxUnbindQrcode() errcode-->{}, errmsg-->{}", jo.has("errcode")?jo.getString("errcode"):"", jo.has("errmsg")?jo.getString("errmsg"):"");
+                log.error("WXController.wxUnbindQrcode() errcode-->{}, errmsg-->{}", jo.containsKey("errcode")?jo.get("errcode"):"", jo.containsKey("errmsg")?jo.get("errmsg"):"");
                 return resultMap;
             }
             ticket = jo.get("ticket").toString();
