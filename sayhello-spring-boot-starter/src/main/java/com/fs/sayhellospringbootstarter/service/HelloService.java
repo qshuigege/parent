@@ -3,7 +3,7 @@ package com.fs.sayhellospringbootstarter.service;
 public class HelloService {
     private String name;
 
-    public String sayHello(String name){
+    public String sayHello(){
         return "hello, " + name;
     }
 
