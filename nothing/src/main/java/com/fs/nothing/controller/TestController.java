@@ -3,8 +3,8 @@ package com.fs.nothing.controller;
 import com.fs.nothing.controller.redis.RedisOperator;
 import com.fs.nothing.service.WXBusinessService;
 import com.fs.nothing.utils.HttpClientUtils;
+import com.fs.nothing.utils.JsonUtils;
 import com.fs.nothing.utils.UserContext;
-import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -99,7 +99,7 @@ public class TestController {
         } catch (Exception e) {
 
         }
-        JSONObject jo = JSONObject.fromObject(ticketJson);
+        Map<String, Object> jo = JsonUtils.jsonToMap(ticketJson);
         if(jo.size()==0){
 
         }
@@ -128,7 +128,7 @@ public class TestController {
         }
 
 
-        JSONObject jo = JSONObject.fromObject(ticketJson);
+        Map<String, Object> jo = JsonUtils.jsonToMap(ticketJson);
         if(jo.size()==0){
 
         }
