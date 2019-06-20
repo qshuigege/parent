@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fs.myerp.dao.TestMybatisDao" >
+
+    <!-- 查询订单状态 -->
+    <!-- <select id="" parameterType="java.lang.String" resultType="int">
+        select count(0) num from wxaccount a, wxacc_orguser_relation r where a.unionid = r.unionid and a.unionid=#{unionid}
+    </select>
+
+    <select id="getErpoidByOpenid" parameterType="hashmap" resultType="string" statementType="CALLABLE">
+        {call proc_geterpoidbyopenid(#{openid},#{erpoid,jdbcType=VARCHAR,mode=OUT})}
+    </select> -->
+
+    <select id="getList" parameterType="hashmap" resultType="hashmap">
+        select * from emp;
+    </select>
+
+     <!--根据openid查询账号是否存在
+    <select id="isAccExist" parameterType="java.lang.String" resultType="int">
+		select count(0) num from wxaccount t where t.openid=#{openid}
+	</select>
+
+    &lt;!&ndash; 查看用户是否已经投票过 &ndash;&gt;
+    <select id="isVoted" parameterType="hashmap" resultType="int">
+		select count(0) num from wxquestionnaire t where t.openid=#{openid} and t.subject = #{subject}
+	</select>
+
+
+    <select id="getVoteData" parameterType="hashmap" resultType="cn.net.fusen.ssm.po.Questionnaire">
+		select * from wxquestionnaire t where t.openid=#{openid} and t.subject = #{subject}
+	</select>
+
+    <insert id="saveResult" parameterType="cn.net.fusen.ssm.po.Questionnaire">
+		insert into wxquestionnaire(openid,subject,item,score)values(#{openid},#{subject},#{item},#{score}})
+	</insert>
+
+    <insert id="saveResultBatch" parameterType="java.util.List">
+        INSERT INTO wxquestionnaire(openid,subject,item,score)
+        <foreach collection="list"  item="itm" index="index" separator="union all">
+            (SELECT #{itm.openid},#{itm.subject},#{itm.item},#{itm.score} FROM DUAL)
+        </foreach>
+    </insert>
+
+    <delete id="delBeforSave" parameterType="hashmap">
+    	delete from wxquestionnaire t where t.openid=#{openid} and t.subject = #{subject}
+    </delete>-->
+</mapper>
