@@ -71,11 +71,11 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.fs</groupId>
             <artifactId>wxdao</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

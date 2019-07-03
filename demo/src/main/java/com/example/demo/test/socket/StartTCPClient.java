@@ -2,7 +2,7 @@ package com.example.demo.test.socket;
 
 import java.util.Scanner;
 
-public class StartUDPClient {
+public class StartTCPClient {
 
     public static void main(String[] args) {
         try {

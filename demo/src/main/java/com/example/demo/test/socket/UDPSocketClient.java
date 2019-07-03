@@ -10,6 +10,7 @@ public class UDPSocketClient{
     private DatagramSocket client;
     private String serverIp;
     private int serverPort;
+    private boolean isreusable = false;
 
     private UDPSocketClient(String serverIp, int serverPort) throws SocketException {
         this.client = new DatagramSocket();
@@ -21,11 +22,29 @@ public class UDPSocketClient{
         return new UDPSocketClient(serverIp, serverPort);
     }
 
-    public void send(String data) throws IOException {
-        byte[] by = data.getBytes();
-        DatagramPacket dp = new DatagramPacket(by, by.length, InetAddress.getByName(serverIp), serverPort);
+    public static UDPSocketClient getInstanceReusable(String serverIp, int serverPort) throws SocketException{
+        UDPSocketClient udpSocketClient = new UDPSocketClient(serverIp, serverPort);
+        udpSocketClient.isreusable = true;
+        return udpSocketClient;
+    }
+
+    public void close() {
+        if (!this.client.isClosed()) {
+            this.client.close();
+        }
+    }
+
+
+    public void send(byte[] data) throws IOException {
+        if (client.isClosed()) {
+            return;
+        }
+        //byte[] by = data.getBytes();
+        DatagramPacket dp = new DatagramPacket(data, data.length, InetAddress.getByName(serverIp), serverPort);
         client.send(dp);
-        client.close();
+        if (!isreusable) {
+            client.close();
+        }
     }
 
 }
