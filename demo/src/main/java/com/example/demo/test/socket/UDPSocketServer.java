@@ -8,17 +8,21 @@ import java.net.SocketException;
 public class UDPSocketServer{
     private DatagramSocket server;
     private boolean isStarted = false;
-    private short maxReceiveSize = 32767;
+    private short maxReceiveSize;
 
-    private UDPSocketServer(int port) throws SocketException {
+    private UDPSocketServer(int port, short maxReceiveSize) throws SocketException {
+        if (maxReceiveSize<10){
+            maxReceiveSize = 10;
+        }
+        this.maxReceiveSize = maxReceiveSize;
         server = new DatagramSocket(port);
     }
 
     public static UDPSocketServer getInstance(int port, short maxReceiveSize) throws SocketException{
-        return new UDPSocketServer(port);
+        return new UDPSocketServer(port, maxReceiveSize);
     }
 
-    public void start(UDPServerTask task) throws SocketException, IOException {
+    public void start(UDPServerTask task) throws IOException {
         if (isStarted){
             return;
         }
