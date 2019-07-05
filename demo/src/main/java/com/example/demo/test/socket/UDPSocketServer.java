@@ -3,32 +3,53 @@ package com.example.demo.test.socket;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
 
 public class UDPSocketServer{
     private DatagramSocket server;
+    private boolean isStarted = false;
+    private short maxReceiveSize = 32767;
 
     private UDPSocketServer(int port) throws SocketException {
         server = new DatagramSocket(port);
     }
 
-    public static UDPSocketServer getInstance(int port) throws SocketException{
+    public static UDPSocketServer getInstance(int port, short maxReceiveSize) throws SocketException{
         return new UDPSocketServer(port);
     }
 
-    public void start() throws SocketException, IOException {
+    public void start(UDPServerTask task) throws SocketException, IOException {
+        if (isStarted){
+            return;
+        }
+        isStarted = true;
         while (true){
-            byte[] b = new byte[1024];
+            byte[] b = new byte[maxReceiveSize];
             DatagramPacket dp = new DatagramPacket(b, b.length);
             server.receive(dp);
-            int dataLen = dp.getLength();
-            String data = new String(dp.getData(), 0, dataLen);
-            InetAddress address = dp.getAddress();//获取发送端的ip
-            String ip = address.getHostAddress();
-            System.out.println("来自："+ip+"发送的数据是:"+data);
-            //5:关闭套接字
-            //server.close();
+            new Thread(new UDPServerRunnable(dp, task)).start();
         }
+    }
+
+    public void close(){
+        server.close();
+    }
+
+    private static class UDPServerRunnable implements Runnable{
+        private DatagramPacket packet;
+        private UDPServerTask task;
+        private UDPServerRunnable(DatagramPacket packet, UDPServerTask task){
+            this.packet = packet;
+            this.task = task;
+        }
+
+        @Override
+        public void run() {
+            task.execute(packet);
+        }
+    }
+
+    public interface UDPServerTask{
+        void execute(DatagramPacket datagramPacket);
     }
 }

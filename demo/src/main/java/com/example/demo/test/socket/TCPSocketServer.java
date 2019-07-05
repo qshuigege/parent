@@ -1,47 +1,84 @@
 package com.example.demo.test.socket;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCPSocketServer {
 
-    public static void main(String[] args) throws Exception{
+    private ServerSocket serverSocket;
+    private boolean isStarted = false;
+    private boolean isClosed = false;
 
-        ServerSocket socket = new ServerSocket(2233);
-        Socket accept = null;
+    private TCPSocketServer(int port) throws IOException {
+        this.serverSocket = new ServerSocket(port);
+    }
 
-        while (true) {
-            accept = socket.accept();
+    public static TCPSocketServer getInstance(int port) throws IOException {
+        return new TCPSocketServer(port);
+    }
 
-            InputStream in = accept.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(in);
-            BufferedReader reader = new BufferedReader(inputStreamReader);
-            String temp = null;
-            StringBuffer sb = new StringBuffer();
-            while ((temp = reader.readLine()) != null) {
-                sb.append(temp);
-            }
-            System.out.println(sb);
-            accept.shutdownInput();
-
-            OutputStream outputStream = accept.getOutputStream();
-            outputStream.write(("客户端你好，你发送的内容为：" + sb.toString()).getBytes());
-            outputStream.flush();
-            accept.shutdownOutput();
-
-            outputStream.close();
-
-            reader.close();
-            inputStreamReader.close();
-            in.close();
-            //accept.close();
-            //socket.close();
+    public void close(){
+        if (isClosed){
+            return;
+        }
+        isClosed = true;
+        try {
+            serverSocket.close();
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
+    }
+
+    public void start() throws IOException {
+        if (isStarted){
+            return;
+        }
+        isStarted = true;
+        while (true){
+
+            Socket acceptSocket = serverSocket.accept();
+            new SocketHandleThread(acceptSocket).start();
+
+        }
+    }
+
+    private class SocketHandleThread extends Thread{
+        private Socket socket;
+        public SocketHandleThread(Socket socket){
+            this.socket = socket;
+        }
+        @Override
+        public void run() {
+            try {
+                InputStream in = socket.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(in);
+                BufferedReader reader = new BufferedReader(inputStreamReader);
+                String temp = null;
+                StringBuffer sb = new StringBuffer();
+                while ((temp = reader.readLine()) != null) {
+                    sb.append(temp);
+                    System.out.println(temp);
+                }
+                System.out.println("接收到消息：" + sb);
+                socket.shutdownInput();
+
+                OutputStream outputStream = socket.getOutputStream();
+                outputStream.write(("客户端你好，你发送的内容为：" + sb.toString()).getBytes());
+                outputStream.flush();
+                socket.shutdownOutput();
+
+                outputStream.close();
+
+                reader.close();
+                inputStreamReader.close();
+                in.close();
+                socket.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
 }
