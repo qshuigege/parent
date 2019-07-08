@@ -9,6 +9,10 @@ import java.util.Map;
 @Mapper
 public interface TestMybatisDao {
 
-    List<Object> getList(Map<String, String> params);
+    List<Map<String, Object>> getList(Map<String, Object> params);
+
+    int getCount(Map<String, Object> params);
+
+    List<Map<String, Object>> testIf(Map<String, Object> params);
 
 }

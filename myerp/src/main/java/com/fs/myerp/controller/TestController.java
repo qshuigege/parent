@@ -2,8 +2,11 @@ package com.fs.myerp.controller;
 
 import com.fs.diyutils.JsonResult;
 import com.fs.myerp.dao.TestMybatisDao;
+import com.fs.myerp.utils.ReusableCodes;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,12 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 public class TestController {
+
+    private Logger log = LoggerFactory.getLogger(TestController.class);
 
     @Autowired
     private StringRedisTemplate redis;
@@ -44,14 +50,31 @@ public class TestController {
 
     @RequestMapping("/testMybatis")
     @Transactional
-    public JsonResult testMybatis(){
+    public JsonResult testMybatis(HttpServletRequest request){
         /*SqlSession sqlSession = sqlSessionFactory.openSession(false);//取消自动提交事务
         List<Object> list = sqlSession.selectList("");*/
 
-        Map<String, String> map = new HashMap<>();
-        List<Object> list = dao.getList(map);
+        String userid = request.getParameter("userid");
+        String pageNumber = request.getParameter("pageNumber");
+        String pageSize = request.getParameter("pageSize");
+        log.debug("userid-->{}, pageNumber-->{}, pageSize-->{}", userid, pageNumber, pageSize);
+        Map<String, Object> map = new HashMap<>();
+        try {
+            int rowindex = ReusableCodes.calcRowindex(pageNumber, pageSize);
+            map.put("userid", userid);
+            //List<Map<String, Object>> list = dao.getList(map);
+            map.put("begin", "2019-7-7");
+            map.put("end", "2019-7-9");
+            int count = dao.getCount(map);
+            map.put("rowindex", rowindex);
+            map.put("pagesize", Integer.parseInt(pageSize));
+            List<Map<String, Object>> maps = dao.testIf(map);
 
-        return JsonResult.success("", list);
+            return JsonResult.success(count + "", maps);
+        }catch (Exception e){
+            map.put("error", e);
+            return JsonResult.fail(e.getMessage(), map);
+        }
     }
 
     @RequestMapping("/testMybatisSqlSession")

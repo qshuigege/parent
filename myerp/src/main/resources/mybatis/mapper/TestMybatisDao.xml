@@ -12,7 +12,31 @@
     </select> -->
 
     <select id="getList" parameterType="hashmap" resultType="hashmap">
-        select * from emp;
+        select * from emp
+        <if test="userid != null and userid != ''">
+            where userid = #{userid}
+        </if>
+    </select>
+
+    <select id="getCount" parameterType="map" resultType="int">
+        select count(*) count from emp
+        <if test="begin != null and begin != '' and end != null and end != ''">
+            where create_date between #{begin} and #{end}
+        </if>
+    </select>
+
+    <select id="testIf" parameterType="hashmap" resultType="hashmap">
+        select * from emp
+        <if test="begin != null and begin != '' and end != null and end != ''">
+            where create_date between #{begin} and #{end}
+        </if>
+        order by create_date desc
+        <if test="begin != null and begin != '' and end != null and end != ''">
+            <if test="rowindex !=null and pagesize != null">
+                limit #{rowindex}, #{pagesize}
+            </if>
+        </if>
+
     </select>
 
      <!--根据openid查询账号是否存在
