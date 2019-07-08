@@ -39,6 +39,14 @@
 
     </select>
 
+    <select id="testPagehelper" parameterType="hashmap" resultType="hashmap">
+        select * from emp
+        <if test="begin != null and begin != '' and end != null and end != ''">
+            where create_date between #{begin} and #{end}
+        </if>
+        order by create_date desc
+    </select>
+
      <!--根据openid查询账号是否存在
     <select id="isAccExist" parameterType="java.lang.String" resultType="int">
 		select count(0) num from wxaccount t where t.openid=#{openid}

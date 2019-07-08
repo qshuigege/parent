@@ -3,6 +3,9 @@ package com.fs.myerp.controller;
 import com.fs.diyutils.JsonResult;
 import com.fs.myerp.dao.TestMybatisDao;
 import com.fs.myerp.utils.ReusableCodes;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
@@ -12,6 +15,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,6 +79,17 @@ public class TestController {
             map.put("error", e);
             return JsonResult.fail(e.getMessage(), map);
         }
+    }
+
+    @RequestMapping("/testPagehelper")
+    public JsonResult testPagehelper(@RequestParam Map<String, Object> params){
+        PageHelper.startPage(Integer.parseInt(params.get("pageNum").toString()), Integer.parseInt(params.get("pageSize").toString()));
+        Map<String, Object> map = new HashMap<>();
+        map.put("begin", null);
+        map.put("end", null);
+        List<Map<String, Object>> maps = dao.testPagehelper(map);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(maps);
+        return JsonResult.success(pageInfo.getTotal()+"", pageInfo);
     }
 
     @RequestMapping("/testMybatisSqlSession")

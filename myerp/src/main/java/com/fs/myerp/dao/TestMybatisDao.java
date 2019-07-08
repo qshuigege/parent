@@ -15,4 +15,6 @@ public interface TestMybatisDao {
 
     List<Map<String, Object>> testIf(Map<String, Object> params);
 
+    List<Map<String, Object>> testPagehelper(Map<String, Object> params);
+
 }
