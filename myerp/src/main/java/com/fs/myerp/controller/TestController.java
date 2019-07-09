@@ -2,8 +2,11 @@ package com.fs.myerp.controller;
 
 import com.fs.diyutils.JsonResult;
 import com.fs.myerp.dao.TestMybatisDao;
+import com.fs.myerp.model.Test;
 import com.fs.myerp.utils.ReusableCodes;
-import com.github.pagehelper.Page;
+import com.fs.myerp.vo.TestDozerVo;
+import com.fs.myerp.vo.TestVo;
+import com.github.dozermapper.core.Mapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.session.SqlSession;
@@ -14,11 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,9 @@ public class TestController {
 
     @Autowired
     private TestMybatisDao dao;
+
+    @Autowired
+    private Mapper dozer;
 
     @RequestMapping("/testRedis")
     public JsonResult testRedis(){
@@ -92,6 +97,27 @@ public class TestController {
         return JsonResult.success(pageInfo.getTotal()+"", pageInfo);
     }
 
+    @RequestMapping("/testMybatisDataParam")
+    public JsonResult testMybatisDataParam(@RequestBody TestVo vo){
+        PageHelper.startPage(vo.getPageNum(), vo.getPageSize());
+        List<Test> tests = dao.testMybatisDateParam(vo);
+        PageInfo<Test> pageInfo = new PageInfo<>(tests);
+        Map<String, Object> result = new HashMap<>();
+        List<TestDozerVo> dlist = new ArrayList<>();
+        for (int i = 0; i < tests.size(); i++) {
+            dlist.add(dozer.map(tests.get(i), TestDozerVo.class));
+        }
+        result.put("test1", dlist);
+
+        TestDozerVo dozerVo = dozer.map(vo, TestDozerVo.class);
+        result.put("test2", dozerVo);
+
+        List l = dozer.map(tests, List.class);
+        result.put("test3", l);
+
+        return JsonResult.success(pageInfo.getTotal()+"", result);
+    }
+
     @RequestMapping("/testMybatisSqlSession")
     public JsonResult testMybatisSqlSession(){
         SqlSession sqlSession = sqlSessionFactory.openSession(false);
@@ -103,5 +129,23 @@ public class TestController {
             sqlSession.rollback();
             return JsonResult.fail(e.getMessage(), e);
         }
+    }
+
+    @RequestMapping("/testRestful/{name}")
+    public JsonResult testRestful(@PathVariable("name") String name){
+        return JsonResult.success(name, name);
+    }
+
+    @RequestMapping("/testRequestBody")
+    public JsonResult testRequestBody(@RequestBody List<Map<String, Object>> list){
+        list.forEach(m -> m.forEach((key, value) -> {
+            log.debug("key-->{}, value-->{}", key, value);
+        }));
+        return JsonResult.success("", list);
+    }
+
+    @RequestMapping("/testRequestParam")
+    public JsonResult testRequestParam(@RequestBody TestVo vo, @RequestParam("username") String name){
+        return JsonResult.success(name, vo);
     }
 }

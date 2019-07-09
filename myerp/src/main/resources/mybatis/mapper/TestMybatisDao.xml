@@ -47,6 +47,14 @@
         order by create_date desc
     </select>
 
+    <select id="testMybatisDateParam" parameterType="com.fs.myerp.vo.TestVo" resultType="com.fs.myerp.model.Test">
+        select * from emp
+        <if test="timeRangeBegin != null and timeRangeEnd != null">
+            where create_date between #{timeRangeBegin} and #{timeRangeEnd}
+        </if>
+        order by create_date desc
+    </select>
+
      <!--根据openid查询账号是否存在
     <select id="isAccExist" parameterType="java.lang.String" resultType="int">
 		select count(0) num from wxaccount t where t.openid=#{openid}
