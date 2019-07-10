@@ -2,6 +2,7 @@ package com.fs.myerp.controller;
 
 import com.fs.diyutils.JsonResult;
 import com.fs.myerp.dao.TestMybatisDao;
+import com.fs.myerp.model.Emp;
 import com.fs.myerp.model.Test;
 import com.fs.myerp.utils.ReusableCodes;
 import com.fs.myerp.vo.TestDozerVo;
@@ -116,6 +117,12 @@ public class TestController {
         result.put("test3", l);
 
         return JsonResult.success(pageInfo.getTotal()+"", result);
+    }
+
+    @RequestMapping("/testConcat")
+    public JsonResult testConcat(@RequestBody List<Emp> empList){
+        List<Emp> emps = dao.testConcat(empList);
+        return JsonResult.success("", emps);
     }
 
     @RequestMapping("/testMybatisSqlSession")
