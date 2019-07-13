@@ -30,7 +30,7 @@ class AcceptHandler implements CompletionHandler<AsynchronousSocketChannel, Asyn
     @Override
     public void completed(AsynchronousSocketChannel result, AsynchronousServerSocketChannel attachment) {
         attachment.accept(attachment, this);
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(2);
         result.read(buffer, result, new ReadHandler(buffer));
     }
 
@@ -64,7 +64,7 @@ class ReadHandler implements CompletionHandler<Integer, AsynchronousSocketChanne
                 if (wb.hasRemaining()){
                     attachment.write(wb, attachment, this);
                 }else {
-                    ByteBuffer readbf = ByteBuffer.allocate(1024);
+                    ByteBuffer readbf = ByteBuffer.allocate(2);
                     attachment.read(readbf, attachment, new ReadHandler(readbf));
                 }
             }
