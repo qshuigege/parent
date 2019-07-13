@@ -1,7 +1,9 @@
 package com.fs.myerp.controller;
 
+import com.fs.diyutils.JsonResponse;
 import com.fs.diyutils.JsonResult;
 import com.fs.myerp.dao.TestMybatisDao;
+import com.fs.myerp.service.AopTestService;
 import com.fs.myerp.utils.ReusableCodes;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -15,6 +17,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +42,9 @@ public class TestController {
 
     @Autowired
     private TestMybatisDao dao;
+
+    @Autowired
+    private AopTestService aopTestService;
 
     @RequestMapping("/testRedis")
     public JsonResult testRedis(){
@@ -103,5 +109,10 @@ public class TestController {
             sqlSession.rollback();
             return JsonResult.fail(e.getMessage(), e);
         }
+    }
+
+    @RequestMapping(value = "/testAop", method = RequestMethod.POST)
+    public JsonResponse testAop(HttpServletRequest request){
+        return aopTestService.testAop(request);
     }
 }
