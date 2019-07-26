@@ -65,7 +65,7 @@
     </select>
 
     <select id="testConcat" parameterType="java.util.List" resultMap="BaseResultMap">
-        select id, userid, pwd, name, create_date, '${list[0].operator}' operator from emp
+        select id, userid, pwd, name, create_date, #{list[0].operator} operator from emp
     </select>
 
      <!--根据openid查询账号是否存在

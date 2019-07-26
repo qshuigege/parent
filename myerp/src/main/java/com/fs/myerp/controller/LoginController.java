@@ -4,6 +4,7 @@ import com.fs.diyutils.JsonResponse;
 import com.fs.myerp.bo.UserContext;
 import com.fs.myerp.po.LoginPo;
 import com.fs.myerp.vo.LoginVo;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpSession;
 public class LoginController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public JsonResponse login(HttpServletRequest request, @RequestBody LoginPo po){
+    public JsonResponse login(HttpServletRequest request, @Validated @RequestBody LoginPo po){
         if (("admin".equals(po.getLoginId())&&"adminn".equals(po.getLoginPwd()))||("scott".equals(po.getLoginId())&&"tiger".equals(po.getLoginPwd()))){
             HttpSession session = request.getSession(true);
             UserContext userContext = new UserContext();

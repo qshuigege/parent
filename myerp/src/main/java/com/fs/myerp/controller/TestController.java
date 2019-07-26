@@ -3,8 +3,11 @@ package com.fs.myerp.controller;
 import com.fs.diyutils.JsonResponse;
 import com.fs.diyutils.JsonResult;
 import com.fs.myerp.dao.TestMybatisDao;
+import com.fs.myerp.model.Emp;
+import com.fs.myerp.po.LoginPo;
 import com.fs.myerp.service.AopTestService;
 import com.fs.myerp.utils.ReusableCodes;
+import com.fs.myerp.utils.ValidationUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -16,15 +19,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ResourceUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
 
 @RestController
 public class TestController {
@@ -98,6 +108,12 @@ public class TestController {
         return JsonResult.success(pageInfo.getTotal()+"", pageInfo);
     }
 
+    @RequestMapping("/testMybatisConcat")
+    public JsonResponse testMybatisConcat(@RequestBody List<Emp> empList){
+        List<Emp> emps = dao.testConcat(empList);
+        return JsonResponse.success(emps);
+    }
+
     @RequestMapping("/testMybatisSqlSession")
     public JsonResult testMybatisSqlSession(){
         SqlSession sqlSession = sqlSessionFactory.openSession(false);
@@ -115,4 +131,58 @@ public class TestController {
     public JsonResponse testAop(HttpServletRequest request){
         return aopTestService.testAop(request);
     }
+
+    @RequestMapping(value = "/testFileUpload", method = RequestMethod.POST)
+    public JsonResponse testFileUpload(HttpServletRequest request){
+        return aopTestService.testAop(request);
+    }
+
+    @RequestMapping(value = "/testMultipartFile")
+    public JsonResponse testMultipartFile(@RequestParam(value = "file")MultipartFile mpf, HttpServletRequest request){
+        try {
+            String classpath = ResourceUtils.getURL("classpath:").getPath();
+            log.debug("classpath-->{}", classpath);
+            File uploadPathFile = new File(classpath + File.separator + "upload");
+            if (!uploadPathFile.exists()) {
+                uploadPathFile.mkdir();
+            }
+            log.debug("path-->{}", uploadPathFile.getPath());
+            log.debug("name-->{}", uploadPathFile.getName());
+            log.debug("absolutePath-->{}", uploadPathFile.getAbsolutePath());
+            log.debug("canonicalPath-->{}", uploadPathFile.getCanonicalPath());
+            log.debug("parentPath-->{}", uploadPathFile.getParent());
+            File file = new File(uploadPathFile.getPath() + File.separator + UUID.randomUUID()+mpf.getOriginalFilename());
+            FileCopyUtils.copy(mpf.getBytes(), file);
+            System.out.println("aaa-->"+classpath);
+            System.out.println("bbb-->"+request.getServletPath());
+            System.out.println("ccc-->"+request.getServletContext().getContextPath());
+            System.out.println("ccc22-->"+request.getServletContext().getRealPath("/"));
+            System.out.println("ddd-->"+request.getParameter("username"));
+            System.out.println("eee-->"+mpf.getOriginalFilename());
+            MultipartHttpServletRequest mReq = (MultipartHttpServletRequest)request;
+            MultipartFile mpf2 = mReq.getFile("file");
+            System.out.println(mpf2.getOriginalFilename());
+            if(mpf == null){
+
+                System.out.println("mpf is nullaaa");
+            }else {
+                System.out.println("oooook");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return JsonResponse.success("ok");
+    }
+
+    @RequestMapping(value = "/testValidation", method = RequestMethod.POST)
+    public JsonResponse testValidation(HttpServletRequest request, @Validated @RequestBody LoginPo loginPo, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return JsonResponse.fail(ValidationUtils.getFailMsg(bindingResult));
+        }else{
+            return JsonResponse.success("ok");
+        }
+    }
+
 }
