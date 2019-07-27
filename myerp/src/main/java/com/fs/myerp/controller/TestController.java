@@ -29,10 +29,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -182,6 +182,47 @@ public class TestController {
             return JsonResponse.fail(ValidationUtils.getFailMsg(bindingResult));
         }else{
             return JsonResponse.success("ok");
+        }
+    }
+
+    @RequestMapping(value = "/testUploadFile", method = RequestMethod.POST)
+    public JsonResponse testUploadFile(@RequestParam("file") MultipartFile uploadFile, HttpServletRequest request) {
+
+        try {
+            String fileName = UUID.randomUUID().toString().toLowerCase()+"_"+uploadFile.getOriginalFilename();
+            File uploadDir = new File(new File("upload").getAbsolutePath());
+            if(!uploadDir.exists()) {//如果不存在则创建目录
+                uploadDir.mkdirs();
+            }
+            File file = new File(uploadDir.getPath() + File.separator + fileName);
+            FileCopyUtils.copy(uploadFile.getBytes(), file);
+            return JsonResponse.success("上传文件成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("上传文件异常！-->{}", e.getMessage());
+            return JsonResponse.fail("上传文件异常！-->"+e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/testDownloadFile")
+    public void testDownloadFile(@RequestParam("file") String fileName, HttpServletRequest request, HttpServletResponse response) {
+        File uploadDir = new File(new File("upload").getAbsolutePath());
+        File file = new File(uploadDir.getPath() + File.separator + fileName);
+        response.setHeader("Content-Disposition", "attachment;fileName="+fileName);
+        if (!file.exists()) return;
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            ServletOutputStream outputStream = response.getOutputStream();
+            byte[] buff = new byte[1024];
+            int len = -1;
+            while ((len = fileInputStream.read(buff))>0){
+                outputStream.write(buff, 0, len);
+            }
+            outputStream.flush();
+            outputStream.close();
+            fileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
