@@ -1,7 +1,6 @@
 package com.example.demo.test.socket;
 
-import java.io.IOException;
-import java.net.*;
+import java.net.InetAddress;
 
 public class StartUDPServer {
 
