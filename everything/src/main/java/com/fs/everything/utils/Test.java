@@ -5,8 +5,13 @@ public class Test {
     public static void main(String[] args) throws Exception{
         String key = AESUtils.generateKey();
         String iv = AESUtils.generateKey();
-        String result = AESUtils.encrypt("富森供应链管理有限公司", key, iv);
-        System.out.println(result);
+        key = AESUtils.KEY;
+        iv = AESUtils.IV_PARAM;
+        System.out.println("key-->"+key+", iv-->"+iv);
+        String pwd = "123456123456123456";
+        System.out.println("pwd-->"+pwd);
+        String result = AESUtils.encrypt(pwd, key, iv);
+        System.out.println("encrypted pwd-->"+result+", length-->"+result.length());
         String decrypt = AESUtils.decrypt(result, key, iv);
         System.out.println(decrypt);
 

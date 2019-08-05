@@ -59,7 +59,7 @@ public class TCPSocketClient2 {
     }*/
 
     public static void main(String[] args) throws IOException {
-        TCPSocketClient2 client = new TCPSocketClient2("localhost", 1234);
+        TCPSocketClient2 client = new TCPSocketClient2("192.168.53.211", 1234);
         byte[] data = new byte[]{0x44,0x52, 0x00,0x00, 0x2b, 0x03, 0x00,0x00, 0x00,0x03, 0x01,0x03,(byte)0xe5, (byte)0xb0};//0x03e6=998
         byte[] retVal = client.send(data);
         for (byte b : retVal) {
