@@ -1,9 +1,7 @@
 package com.example.demo.utils;
 
-import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
-import org.slf4j.impl.Log4jLoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -27,7 +25,8 @@ public class ChangeLogLevelUtils {
             Object root = getLogger.invoke(iLoggerFactory, "ROOT");//root对象类型为ch.qos.logback.classic.Logger
             Class<?> rootClazz = root.getClass();
             Class<?> levelClazz = Class.forName("ch.qos.logback.classic.Level");
-            Constructor<?> levelClazzConstructor = levelClazz.getConstructor(int.class, String.class);
+            Constructor<?> levelClazzConstructor = levelClazz.getDeclaredConstructor(int.class, String.class);
+            levelClazzConstructor.setAccessible(true);
             Object levelObj;
             if (level==Level.TRACE) {
                 levelObj = levelClazzConstructor.newInstance(5000, "TRACE");
