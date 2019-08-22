@@ -16,12 +16,11 @@ public class MongoUtils {
     }
 
     public static void extractObjectIdInfo(List<Map> docLst){
-        for (int i = 0; i < docLst.size(); i++) {
-            Map m = docLst.get(i);
-            if(null == m.get("_id")){
+        for (Map m : docLst) {
+            if (null == m.get("_id")) {
                 return;
             }
-            ObjectId id = (ObjectId)m.get("_id");
+            ObjectId id = (ObjectId) m.get("_id");
             m.put("id", id.toString());
         }
     }
