@@ -1,0 +1,11 @@
+server:
+  port: 8081
+
+mqtt:
+  config:
+    mqttServer: tcp://172.16.65.128:1883
+    mqttUserName: admin
+    mqttPwd: public
+    clientId: abcdefg
+    topic: testtopic
+    cleanSession: 0
