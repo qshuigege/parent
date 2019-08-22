@@ -1,7 +1,7 @@
 package com.fs.testemqx.listener;
 
 import com.fs.testemqx.config.MqttConfig;
-import com.fs.testemqx.mqtt.MqttBusinessHelper;
+import com.fs.testemqx.mqtt.MqttClientHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.boot.SpringApplication;
@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 public class MqttSubscribeListener implements ApplicationListener<ApplicationReadyEvent> {
 
     @Resource
-    private MqttBusinessHelper businessHelper;
+    private MqttClientHelper clientHelper;
 
     @Resource
     private MqttConfig mqttConfig;
@@ -24,7 +24,7 @@ public class MqttSubscribeListener implements ApplicationListener<ApplicationRea
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         try {
-            businessHelper.subscribe(mqttConfig.getTopic());
+            clientHelper.subscribe(mqttConfig.getTopic());
             log.info("订阅主题{}成功！", mqttConfig.getTopic());
         } catch (MqttException e) {
             log.error("mqtt订阅异常，无法启动！");

@@ -8,16 +8,16 @@ import javax.annotation.Resource;
 
 @Component
 @Slf4j
-public class MqttBusinessHelper {
+public class MqttClientHelper {
 
     @Resource
     private MqttClient mqttClient;
 
-    public void send(String topic, String msg) throws MqttException {
-        send(0, false, topic, msg);
+    public void publish(String topic, String msg) throws MqttException {
+        publish(0, false, topic, msg);
     }
 
-    public void send(int qos,boolean retained,String topic,String pushMessage) throws MqttException {
+    public void publish(int qos,boolean retained,String topic,String pushMessage) throws MqttException {
         MqttMessage message = new MqttMessage();
         message.setQos(qos);
         message.setRetained(retained);
