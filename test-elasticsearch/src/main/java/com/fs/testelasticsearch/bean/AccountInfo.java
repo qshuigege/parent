@@ -3,6 +3,7 @@ package com.fs.testelasticsearch.bean;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "testes", type = "accountinfo")
 public class AccountInfo {
@@ -10,7 +11,7 @@ public class AccountInfo {
     @Id
     private String id;
 
-    @Field
+    @Field(index = true,type = FieldType.Text,analyzer="ik_max_word",searchAnalyzer="ik_smart")
     private String name;
 
     public String getId() {
