@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingFloorDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingFloorPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="park_name" jdbcType="VARCHAR" property="parkName" />
+    <result column="floor_name" jdbcType="VARCHAR" property="floorName" />
+    <result column="total_places" jdbcType="INTEGER" property="totalPlaces" />
+    <result column="specific_places" jdbcType="INTEGER" property="specificPlaces" />
+    <result column="temp_places" jdbcType="INTEGER" property="tempPlaces" />
+    <result column="specific_in_use" jdbcType="INTEGER" property="specificInUse" />
+    <result column="temp_in_use" jdbcType="INTEGER" property="tempInUse" />
+    <result column="reserved_places" jdbcType="INTEGER" property="reservedPlaces" />
+    <result column="remain_places" jdbcType="INTEGER" property="remainPlaces" />
+    <result column="manager" jdbcType="VARCHAR" property="manager" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="publish_state" jdbcType="VARCHAR" property="publishState" />
+  </resultMap>
+  <resultMap id="BaseResultMapVo" type="com.drzk.parkingguide.vo.ParkingFloorVo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="park_name" jdbcType="VARCHAR" property="parkName" />
+    <result column="floor_name" jdbcType="VARCHAR" property="floorName" />
+    <result column="total_places" jdbcType="INTEGER" property="totalPlaces" />
+    <result column="specific_places" jdbcType="INTEGER" property="specificPlaces" />
+    <result column="temp_places" jdbcType="INTEGER" property="tempPlaces" />
+    <result column="specific_in_use" jdbcType="INTEGER" property="specificInUse" />
+    <result column="temp_in_use" jdbcType="INTEGER" property="tempInUse" />
+    <result column="reserved_places" jdbcType="INTEGER" property="reservedPlaces" />
+    <result column="remain_places" jdbcType="INTEGER" property="remainPlaces" />
+    <result column="manager" jdbcType="VARCHAR" property="manager" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="publish_state" jdbcType="VARCHAR" property="publishState" />
+  </resultMap>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into parking_floor (id, create_date,
+      park_name, floor_name, total_places,
+      specific_places, temp_places, specific_in_use,
+      temp_in_use, reserved_places, remain_places,
+      manager, memo)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (uuid(), now(),
+      #{item.parkName,jdbcType=VARCHAR}, #{item.floorName,jdbcType=VARCHAR}, #{item.totalPlaces,jdbcType=INTEGER},
+      #{item.specificPlaces,jdbcType=INTEGER}, #{item.tempPlaces,jdbcType=INTEGER}, #{item.specificInUse,jdbcType=INTEGER},
+      #{item.tempInUse,jdbcType=INTEGER}, #{item.reservedPlaces,jdbcType=INTEGER}, #{item.remainPlaces,jdbcType=INTEGER},
+      #{item.manager,jdbcType=VARCHAR}, #{item.memo,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+  <select id="queryParkingFloorPage" parameterType="com.drzk.parkingguide.vo.ParkingFloorVo" resultMap="BaseResultMapVo">
+    select id, create_date, update_date, park_name, floor_name, total_places, specific_places,
+    temp_places, specific_in_use, temp_in_use, reserved_places, remain_places, manager, memo, publish_state
+    from parking_floor
+    where 1=1
+    <if test="publishState!=null">
+      and publish_state = #{publishState,jdbcType=INTEGER}
+    </if>
+    order by create_date desc
+  </select>
+
+  <select id="queryById" parameterType="com.drzk.parkingguide.vo.ParkingFloorVo" resultMap="BaseResultMapVo">
+    select id, create_date, update_date, park_name, floor_name, total_places, specific_places,
+    temp_places, specific_in_use, temp_in_use, reserved_places, remain_places, manager, memo, publish_state
+    from parking_floor
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryByParkName" parameterType="com.drzk.parkingguide.vo.ParkingFloorVo" resultMap="BaseResultMapVo">
+    select * from parking_floor
+    <if test="parkName!=null">
+      where park_name like concat(concat('%',#{parkName}),'%')
+    </if>
+    order by create_date desc
+  </select>
+
+  <select id="queryByFloorName" parameterType="com.drzk.parkingguide.vo.ParkingFloorVo" resultMap="BaseResultMapVo">
+    select * from parking_floor
+    <if test="floorName!=null">
+        where floor_name like concat(concat('%',#{floorName}),'%')
+    </if>
+    order by create_date desc
+  </select>
+
+  <insert id="insert" parameterType="com.drzk.parkingguide.po.ParkingFloorPo">
+    insert into parking_floor (id,
+      park_name, floor_name, total_places,
+      specific_places, temp_places, specific_in_use,
+      temp_in_use, reserved_places, remain_places,
+      manager, memo, publish_state)
+    values (uuid(),
+      #{parkName,jdbcType=VARCHAR}, #{floorName,jdbcType=VARCHAR}, #{totalPlaces,jdbcType=INTEGER},
+      #{specificPlaces,jdbcType=INTEGER}, #{tempPlaces,jdbcType=INTEGER}, #{specificInUse,jdbcType=INTEGER},
+      #{tempInUse,jdbcType=INTEGER}, #{reservedPlaces,jdbcType=INTEGER}, #{remainPlaces,jdbcType=INTEGER},
+      #{manager,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{publishState,jdbcType=INTEGER})
+  </insert>
+
+  <!--specific_in_use = #{specificInUse,jdbcType=INTEGER},
+  temp_in_use = #{tempInUse,jdbcType=INTEGER},
+  reserved_places = #{reservedPlaces,jdbcType=INTEGER},
+  remain_places = #{remainPlaces,jdbcType=INTEGER},
+  publish_state = #{publishState,jdbcType=INTEGER}-->
+  <update id="updateById" parameterType="com.drzk.parkingguide.po.ParkingFloorPo">
+    update parking_floor
+    set update_date = now(),
+      park_name = #{parkName,jdbcType=VARCHAR},
+      floor_name = #{floorName,jdbcType=VARCHAR},
+      total_places = #{totalPlaces,jdbcType=INTEGER},
+      specific_places = #{specificPlaces,jdbcType=INTEGER},
+      temp_places = #{tempPlaces,jdbcType=INTEGER},
+      reserved_places = #{reservedPlaces,jdbcType=INTEGER},
+      manager = #{manager,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!--<delete id="deleteById" parameterType="com.drzk.parkingguide.po.ParkingFloorPo">
+    delete from parking_floor
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>-->
+
+  <delete id="deleteByIdBatch" parameterType="list">
+    delete from parking_floor
+    where id in
+    <foreach collection="list" open="(" close=")" separator="," item="item">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+
+  <update id="updateRemainPlaces" parameterType="com.drzk.parkingguide.vo.ParkingFloorVo">
+    update parking_floor
+    set update_date = now(),
+      remain_places = #{remainPlaces,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updatePublishState" parameterType="com.drzk.parkingguide.vo.ParkingFloorVo">
+    update parking_floor
+    set update_date = now(),
+      publish_state = #{publishState,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from parking_floor
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <update id="updateByPrimaryKey" parameterType="com.drzk.parkingguide.po.ParkingFloorPo">
+    update parking_floor
+    set create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      park_name = #{parkName,jdbcType=VARCHAR},
+      floor_name = #{floorName,jdbcType=VARCHAR},
+      total_places = #{totalPlaces,jdbcType=INTEGER},
+      specific_places = #{specificPlaces,jdbcType=INTEGER},
+      temp_places = #{tempPlaces,jdbcType=INTEGER},
+      specific_in_use = #{specificInUse,jdbcType=INTEGER},
+      temp_in_use = #{tempInUse,jdbcType=INTEGER},
+      reserved_places = #{reservedPlaces,jdbcType=INTEGER},
+      remain_places = #{remainPlaces,jdbcType=INTEGER},
+      manager = #{manager,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, create_date, update_date, park_name, floor_name, total_places, specific_places, 
+    temp_places, specific_in_use, temp_in_use, reserved_places, remain_places, manager, 
+    memo
+    from parking_floor
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, create_date, update_date, park_name, floor_name, total_places, specific_places, 
+    temp_places, specific_in_use, temp_in_use, reserved_places, remain_places, manager, 
+    memo
+    from parking_floor
+  </select>
+</mapper>

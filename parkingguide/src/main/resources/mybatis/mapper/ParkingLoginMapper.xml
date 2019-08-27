@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingLoginDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingLoginPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="login_id" jdbcType="VARCHAR" property="loginId" />
+    <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="ismanager" jdbcType="BIT" property="ismanager" />
+  </resultMap>
+
+  <resultMap id="BaseResultMapVo" type="com.drzk.parkingguide.vo.ParkingLoginVo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="login_id" jdbcType="VARCHAR" property="loginId" />
+    <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="ismanager" jdbcType="BIT" property="ismanager" />
+  </resultMap>
+
+  <select id="login" parameterType="com.drzk.parkingguide.po.ParkingLoginPo" resultMap="BaseResultMap">
+    select *
+    from parking_login
+    where login_id = #{loginId,jdbcType=VARCHAR} and login_pwd = #{loginPwd,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="addUser" parameterType="com.drzk.parkingguide.po.ParkingLoginPo">
+    insert into parking_login (
+    id, login_id, login_pwd, login_name, ismanager
+    )
+    values
+      (uuid(), #{loginId,jdbcType=VARCHAR}, #{loginPwd,jdbcType=VARCHAR},
+      #{loginName,jdbcType=VARCHAR},#{ismanager, jdbcType=BIT})
+  </insert>
+
+  <insert id="addUserBatch" parameterType="list">
+    insert into parking_login (id,
+    login_id, login_pwd, login_name, ismanager
+    )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (
+        uuid(), #{item.loginId,jdbcType=VARCHAR}, #{item.loginPwd,jdbcType=VARCHAR},
+        #{item.loginName,jdbcType=VARCHAR}, #{item.ismanager, jdbcType=BIT}
+      )
+    </foreach>
+  </insert>
+
+  <delete id="deleteByIdBatch" parameterType="list">
+    delete from parking_login
+    where id in
+    <foreach collection="list" open="(" close=")" separator="," item="item">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+
+  <select id="getAllUser" resultMap="BaseResultMapVo">
+    select id, create_date, update_date, login_id, login_pwd, login_name, ismanager
+    from parking_login order by create_date desc
+  </select>
+
+  <select id="isLoginIdExist" parameterType="com.drzk.parkingguide.po.ParkingLoginPo" resultType="int">
+    select count(0)
+    from parking_login
+    where login_id = #{loginId, jdbcType=VARCHAR}
+  </select>
+
+  <update id="resetPwd" parameterType="com.drzk.parkingguide.po.ParkingLoginPo">
+    update parking_login set login_pwd = #{loginPwd,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR} and login_id = #{loginId,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updatePwd" parameterType="com.drzk.parkingguide.vo.ParkingLoginVo">
+    update parking_login set login_pwd = #{newPwd,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR} and login_id = #{loginId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="queryById" parameterType="com.drzk.parkingguide.po.ParkingLoginPo" resultMap="BaseResultMap">
+    select *
+    from parking_login
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryByIds" parameterType="list" resultMap="BaseResultMap">
+    select *
+    from parking_login
+    where id in
+    <foreach collection="list" item="item" separator="," open="(" close=")">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </select>
+
+
+
+
+
+
+
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from parking_login
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insert" parameterType="com.drzk.parkingguide.po.ParkingLoginPo">
+    insert into parking_login (id, create_date, update_date, 
+      login_id, login_pwd, login_name, ismanager
+      )
+    values (#{id,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{loginId,jdbcType=VARCHAR}, #{loginPwd,jdbcType=VARCHAR}, #{loginName,jdbcType=VARCHAR}, #{ismanager, jdbcType=BIT}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.drzk.parkingguide.po.ParkingLoginPo">
+    update parking_login
+    set create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      login_id = #{loginId,jdbcType=VARCHAR},
+      login_pwd = #{loginPwd,jdbcType=VARCHAR},
+      login_name = #{loginName,jdbcType=VARCHAR},
+      ismanager = #{ismanager, jdbcType=BIT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, create_date, update_date, login_id, login_pwd, login_name, ismanager
+    from parking_login
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, create_date, update_date, login_id, login_pwd, login_name, ismanager
+    from parking_login order by create_date desc
+  </select>
+</mapper>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingRegionDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingRegionPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="region_name" jdbcType="VARCHAR" property="regionName" />
+    <result column="floor_id" jdbcType="VARCHAR" property="floorId" />
+    <result column="floor_name" jdbcType="VARCHAR" property="floorName" />
+    <result column="place_no_begin" jdbcType="VARCHAR" property="placeNoBegin" />
+    <result column="place_no_end" jdbcType="VARCHAR" property="placeNoEnd" />
+    <result column="total_places" jdbcType="INTEGER" property="totalPlaces" />
+    <result column="specific_places" jdbcType="INTEGER" property="specificPlaces" />
+    <result column="temp_places" jdbcType="INTEGER" property="tempPlaces" />
+    <result column="specific_in_use" jdbcType="INTEGER" property="specificInUse" />
+    <result column="temp_in_use" jdbcType="INTEGER" property="tempInUse" />
+    <result column="available_places" jdbcType="INTEGER" property="availablePlaces" />
+    <result column="remain_places" jdbcType="INTEGER" property="remainPlaces" />
+    <result column="warning_num" jdbcType="INTEGER" property="warningNum" />
+    <result column="region_map_id" jdbcType="INTEGER" property="regionMapId" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="publish_state" jdbcType="VARCHAR" property="publishState" />
+  </resultMap>
+  <resultMap id="BaseResultMapVo" type="com.drzk.parkingguide.vo.ParkingRegionVo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="region_name" jdbcType="VARCHAR" property="regionName" />
+    <result column="floor_id" jdbcType="VARCHAR" property="floorId" />
+    <result column="floor_name" jdbcType="VARCHAR" property="floorName" />
+    <result column="place_no_begin" jdbcType="VARCHAR" property="placeNoBegin" />
+    <result column="place_no_end" jdbcType="VARCHAR" property="placeNoEnd" />
+    <result column="total_places" jdbcType="INTEGER" property="totalPlaces" />
+    <result column="specific_places" jdbcType="INTEGER" property="specificPlaces" />
+    <result column="temp_places" jdbcType="INTEGER" property="tempPlaces" />
+    <result column="specific_in_use" jdbcType="INTEGER" property="specificInUse" />
+    <result column="temp_in_use" jdbcType="INTEGER" property="tempInUse" />
+    <result column="available_places" jdbcType="INTEGER" property="availablePlaces" />
+    <result column="remain_places" jdbcType="INTEGER" property="remainPlaces" />
+    <result column="warning_num" jdbcType="INTEGER" property="warningNum" />
+    <result column="region_map_id" jdbcType="INTEGER" property="regionMapId" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="publish_state" jdbcType="VARCHAR" property="publishState" />
+  </resultMap>
+
+  <select id="queryParkingRegionPage" parameterType="com.drzk.parkingguide.vo.ParkingRegionVo" resultMap="BaseResultMapVo">
+    select id, create_date, update_date, region_name, floor_id, floor_name, place_no_begin,
+    place_no_end, total_places, specific_places, temp_places, specific_in_use, temp_in_use,
+    available_places, remain_places, warning_num, region_map_id, memo, publish_state
+    from parking_region where 1=1
+    <if test="floorName!=null and floorName!=''">
+      and floor_name like concat(concat('%',#{floorName, jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="regionName!=null and regionName!=''">
+      and region_name like concat(concat('%',#{regionName, jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="floorId!=null and floorId!=''">
+      and floor_id = #{floorId, jdbcType=VARCHAR}
+    </if>
+    <if test="publishState!=null">
+      and publish_state = #{publishState, jdbcType=INTEGER}
+    </if>
+    order by create_date desc
+  </select>
+
+  <select id="queryByRegionName" parameterType="com.drzk.parkingguide.vo.ParkingRegionVo" resultMap="BaseResultMapVo">
+    select id, create_date, update_date, region_name, floor_id, floor_name, place_no_begin,
+    place_no_end, total_places, specific_places, temp_places, specific_in_use, temp_in_use,
+    available_places, remain_places, warning_num, region_map_id, memo, publish_state
+    from parking_region
+    <if test="regionName!=null">
+      where region_name like concat(concat('%',#{regionName}),'%')
+    </if>
+    order by create_date desc
+  </select>
+
+  <!--specific_in_use = #{specificInUse,jdbcType=INTEGER},
+  temp_in_use = #{tempInUse,jdbcType=INTEGER},
+  available_places = #{availablePlaces,jdbcType=INTEGER},
+  remain_places = #{remainPlaces,jdbcType=INTEGER},,
+  publish_state = #{publishState,jdbcType=INTEGER}-->
+  <update id="updateById" parameterType="com.drzk.parkingguide.po.ParkingRegionPo">
+    update parking_region
+    set update_date = now(),
+      region_name = #{regionName,jdbcType=VARCHAR},
+      floor_id = #{floorId,jdbcType=VARCHAR},
+      floor_name = #{floorName,jdbcType=VARCHAR},
+      place_no_begin = #{placeNoBegin,jdbcType=VARCHAR},
+      place_no_end = #{placeNoEnd,jdbcType=VARCHAR},
+      total_places = #{totalPlaces,jdbcType=INTEGER},
+      specific_places = #{specificPlaces,jdbcType=INTEGER},
+      temp_places = #{tempPlaces,jdbcType=INTEGER},
+      available_places = #{availablePlaces,jdbcType=INTEGER},
+      warning_num = #{warningNum,jdbcType=INTEGER},
+      memo = #{memo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="addParkingRegion" parameterType="com.drzk.parkingguide.po.ParkingRegionPo">
+    insert into parking_region (id, create_date,
+      region_name, floor_id, floor_name,
+      place_no_begin, place_no_end, total_places,
+      specific_places, temp_places, specific_in_use,
+      temp_in_use, available_places, remain_places,
+      warning_num, region_map_id, memo, publish_state)
+    values (uuid(), now(),
+      #{regionName,jdbcType=VARCHAR}, #{floorId,jdbcType=VARCHAR}, #{floorName,jdbcType=VARCHAR},
+      #{placeNoBegin,jdbcType=VARCHAR}, #{placeNoEnd,jdbcType=VARCHAR}, #{totalPlaces,jdbcType=INTEGER},
+      #{specificPlaces,jdbcType=INTEGER}, #{tempPlaces,jdbcType=INTEGER}, #{specificInUse,jdbcType=INTEGER},
+      #{tempInUse,jdbcType=INTEGER}, #{availablePlaces,jdbcType=INTEGER}, #{remainPlaces,jdbcType=INTEGER},
+      #{warningNum,jdbcType=INTEGER}, #{regionMapId,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{publishState,jdbcType=INTEGER})
+  </insert>
+
+  <!--<delete id="deleteById" parameterType="com.drzk.parkingguide.po.ParkingRegionPo">
+    delete from parking_region
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>-->
+
+  <delete id="deleteByIdBatch" parameterType="list">
+    delete from parking_region
+    where id in
+    <foreach collection="list" open="(" close=")" separator="," item="item">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+
+  <select id="queryById" parameterType="com.drzk.parkingguide.po.ParkingRegionPo" resultMap="BaseResultMapVo">
+    select id, create_date, update_date, region_name, floor_id, floor_name, place_no_begin,
+    place_no_end, total_places, specific_places, temp_places, specific_in_use, temp_in_use,
+    available_places, remain_places, warning_num, region_map_id, memo, publish_state
+    from parking_region
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <update id="updateRemainPlaces" parameterType="com.drzk.parkingguide.vo.ParkingRegionVo">
+    update parking_region
+    set update_date = now(),
+      remain_places = #{remainPlaces,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="queryRegionsByBelongToFloorId" parameterType="com.drzk.parkingguide.po.CommonQueryConditions" resultMap="BaseResultMapVo">
+    select *
+    from parking_region
+    where floor_id = #{floorId, jdbcType=VARCHAR}
+    <if test="publishState!=null">
+      and publish_state = #{publishState, jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <update id="updatePublishState" parameterType="com.drzk.parkingguide.vo.ParkingRegionVo">
+    update parking_region
+    set update_date = now(),
+      publish_state = #{publishState,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="queryRegionsByPublishState" parameterType="com.drzk.parkingguide.vo.ParkingRegionVo" resultMap="BaseResultMapVo">
+    select * from parking_region where publish_state = #{publishState,jdbcType=INTEGER}
+  </select>
+
+  <update id="updateRegionMapById" parameterType="com.drzk.parkingguide.vo.ParkingRegionVo">
+    update parking_region
+    set update_date = now(),
+      region_map_id = #{regionMapId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="validateAddRegionTotalPlaces" parameterType="com.drzk.parkingguide.po.ParkingRegionPo" resultType="int">
+    select ifnull((aaa.total_places-ttt.used), aaa.total_places) usable
+    from parking_floor aaa
+    left join
+      (select sum(total_places) used, floor_id from parking_region where floor_id = #{floorId,jdbcType=VARCHAR})ttt
+    on aaa.id = ttt.floor_id
+    where aaa.id = #{floorId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryByIdAndOtherCols" parameterType="com.drzk.parkingguide.vo.ParkingRegionVo" resultMap="BaseResultMapVo">
+    select * from parking_region
+    where id = #{id}
+    <if test="floorId!=null and floorId!=''">
+      and floor_id = #{floorId}
+    </if>
+  </select>
+  
+  <select id="getCountByFloorId" parameterType="com.drzk.parkingguide.vo.ParkingRegionVo" resultType="int">
+    select count(0) count from parking_region where floor_id = #{floorId}
+  </select>
+
+
+
+
+
+
+
+</mapper>

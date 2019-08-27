@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingChannelDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingChannelPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
+    <result column="region_id" jdbcType="VARCHAR" property="regionId" />
+    <result column="floor_id" jdbcType="VARCHAR" property="floorId" />
+    <result column="channel_type" jdbcType="VARCHAR" property="channelType" />
+    <result column="in_recog_camera_id" jdbcType="VARCHAR" property="inRecogCameraId" />
+    <result column="out_recog_camera_id" jdbcType="VARCHAR" property="outRecogCameraId" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+  </resultMap>
+  <resultMap id="BaseResultMapVo" type="com.drzk.parkingguide.vo.ParkingChannelVo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
+    <result column="region_id" jdbcType="VARCHAR" property="regionId" />
+    <result column="floor_id" jdbcType="VARCHAR" property="floorId" />
+    <result column="channel_type" jdbcType="VARCHAR" property="channelType" />
+    <result column="in_recog_camera_id" jdbcType="VARCHAR" property="inRecogCameraId" />
+    <result column="out_recog_camera_id" jdbcType="VARCHAR" property="outRecogCameraId" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="region_name" jdbcType="VARCHAR" property="regionName" />
+    <result column="floor_name" jdbcType="VARCHAR" property="floorName" />
+  </resultMap>
+
+
+  <select id="queryParkingChannelPage" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo" resultMap="BaseResultMapVo">
+    select aaa.*, bbb.region_name, ccc.floor_name from parking_channel aaa
+    inner join parking_region bbb on aaa.region_id = bbb.id
+    inner join parking_floor ccc on aaa.floor_id = ccc.id
+    where 1=1
+    <if test="channelName!=null and channelName!=''">
+      and aaa.channel_name like concat(concat('%',#{channelName}),'%')
+    </if>
+    <if test="regionName!=null and regionName!=''">
+      and bbb.region_name like concat(concat('%',#{regionName}),'%')
+    </if>
+    <if test="floorName!=null and floorName!=''">
+      and ccc.floor_name like concat(concat('%',#{floorName}),'%')
+    </if>
+    order by aaa.create_date desc
+  </select>
+
+  <update id="updateById" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo">
+    update parking_channel
+    set update_date = now(),
+      channel_name = #{channelName,jdbcType=VARCHAR},
+      region_id = #{regionId,jdbcType=VARCHAR},
+      floor_id = #{floorId,jdbcType=VARCHAR},
+      channel_type = #{channelType,jdbcType=VARCHAR},
+      in_recog_camera_id = #{inRecogCameraId,jdbcType=VARCHAR},
+      out_recog_camera_id = #{outRecogCameraId,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="addParkingChannel" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo">
+    insert into parking_channel (id, create_date,
+      channel_name, region_id, floor_id,
+      channel_type, in_recog_camera_id, out_recog_camera_id,
+      memo)
+    values (#{id,jdbcType=VARCHAR}, now(),
+      #{channelName,jdbcType=VARCHAR}, #{regionId,jdbcType=VARCHAR}, #{floorId,jdbcType=VARCHAR},
+      #{channelType,jdbcType=VARCHAR}, #{inRecogCameraId,jdbcType=VARCHAR}, #{outRecogCameraId,jdbcType=VARCHAR},
+      #{memo,jdbcType=VARCHAR})
+  </insert>
+
+  <!--<delete id="deleteById" parameterType="com.drzk.parkingguide.po.ParkingRegionPo">
+    delete from parking_region
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>-->
+
+  <delete id="deleteByIdBatch" parameterType="list">
+    delete from parking_channel
+    where id in
+    <foreach collection="list" open="(" close=")" separator="," item="item">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+
+  <select id="queryById" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo" resultMap="BaseResultMapVo">
+    select aaa.* ,bbb.region_name, ccc.floor_name
+    from parking_channel aaa
+    inner join parking_region bbb on aaa.region_id = bbb.id
+    inner join parking_floor ccc on aaa.floor_id = ccc.id
+    where aaa.id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getCountByRegionId" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo" resultType="int">
+    select count(0) count from parking_channel where region_id = #{regionId}
+  </select>
+
+  <update id="updateInRecogCamId" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo">
+    update parking_channel set in_recog_camera_id = null where id = #{id}
+  </update>
+
+  <update id="updateOutRecogCamId" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo">
+    update parking_channel set out_recog_camera_id = null where id = #{id}
+  </update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from parking_channel
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.drzk.parkingguide.po.ParkingChannelPo">
+    insert into parking_channel (id, create_date, update_date, 
+      channel_name, region_id, floor_id, 
+      channel_type, in_recog_camera_id, out_recog_camera_id, 
+      memo)
+    values (#{id,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{channelName,jdbcType=VARCHAR}, #{regionId,jdbcType=VARCHAR}, #{floorId,jdbcType=VARCHAR}, 
+      #{channelType,jdbcType=VARCHAR}, #{inRecogCameraId,jdbcType=VARCHAR}, #{outRecogCameraId,jdbcType=VARCHAR}, 
+      #{memo,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.drzk.parkingguide.po.ParkingChannelPo">
+    update parking_channel
+    set create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      channel_name = #{channelName,jdbcType=VARCHAR},
+      region_id = #{regionId,jdbcType=VARCHAR},
+      floor_id = #{floorId,jdbcType=VARCHAR},
+      channel_type = #{channelType,jdbcType=VARCHAR},
+      in_recog_camera_id = #{inRecogCameraId,jdbcType=VARCHAR},
+      out_recog_camera_id = #{outRecogCameraId,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, create_date, update_date, channel_name, region_id, floor_id, channel_type, 
+    in_recog_camera_id, out_recog_camera_id, memo
+    from parking_channel
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, create_date, update_date, channel_name, region_id, floor_id, channel_type, 
+    in_recog_camera_id, out_recog_camera_id, memo
+    from parking_channel
+  </select>
+</mapper>

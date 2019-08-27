@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingSnapInfoDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingSnapInfoPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="camera_id" jdbcType="VARCHAR" property="cameraId" />
+    <result column="camera_ip" jdbcType="VARCHAR" property="cameraIp" />
+    <result column="camera_type" jdbcType="VARCHAR" property="cameraType" />
+    <result column="plate_no" jdbcType="VARCHAR" property="plateNo" />
+    <result column="plate_type" jdbcType="VARCHAR" property="plateType" />
+    <result column="plate_color" jdbcType="VARCHAR" property="plateColor" />
+    <result column="vehicle_color" jdbcType="VARCHAR" property="vehicleColor" />
+    <result column="vehicle_type" jdbcType="VARCHAR" property="vehicleType" />
+    <result column="vehicle_size" jdbcType="VARCHAR" property="vehicleSize" />
+    <result column="vehicle_brand" jdbcType="VARCHAR" property="vehicleBrand" />
+    <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
+  </resultMap>
+  <resultMap id="BaseResultMapVo" type="com.drzk.parkingguide.po.ParkingSnapInfoPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="camera_id" jdbcType="VARCHAR" property="cameraId" />
+    <result column="camera_ip" jdbcType="VARCHAR" property="cameraIp" />
+    <result column="camera_type" jdbcType="VARCHAR" property="cameraType" />
+    <result column="plate_no" jdbcType="VARCHAR" property="plateNo" />
+    <result column="plate_type" jdbcType="VARCHAR" property="plateType" />
+    <result column="plate_color" jdbcType="VARCHAR" property="plateColor" />
+    <result column="vehicle_color" jdbcType="VARCHAR" property="vehicleColor" />
+    <result column="vehicle_type" jdbcType="VARCHAR" property="vehicleType" />
+    <result column="vehicle_size" jdbcType="VARCHAR" property="vehicleSize" />
+    <result column="vehicle_brand" jdbcType="VARCHAR" property="vehicleBrand" />
+    <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
+  </resultMap>
+  <resultMap id="StatisticsVo" type="com.drzk.parkingguide.vo.StatisticsVo">
+    <result column="date" jdbcType="TIMESTAMP" property="date" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.drzk.parkingguide.po.ParkingSnapInfoPo">
+    insert into parking_snap_info (id, create_date,
+      camera_id, camera_ip, camera_type,
+      plate_no, plate_type, plate_color,
+      vehicle_color, vehicle_type, vehicle_size,
+      vehicle_brand, channel_id)
+    values (uuid(), now(),
+      #{cameraId,jdbcType=VARCHAR}, #{cameraIp,jdbcType=VARCHAR}, #{cameraType,jdbcType=VARCHAR},
+      #{plateNo,jdbcType=VARCHAR}, #{plateType,jdbcType=VARCHAR}, #{plateColor,jdbcType=VARCHAR},
+      #{vehicleColor,jdbcType=VARCHAR}, #{vehicleType,jdbcType=VARCHAR}, #{vehicleSize,jdbcType=VARCHAR},
+      #{vehicleBrand,jdbcType=VARCHAR}, #{channelId,jdbcType=VARCHAR})
+  </insert>
+
+  <select id="queryById" parameterType="com.drzk.parkingguide.po.ParkingSnapInfoPo" resultMap="BaseResultMapVo">
+    select id, create_date, update_date, camera_id, camera_ip, camera_type, plate_no,
+    plate_type, plate_color, vehicle_color, vehicle_type, vehicle_size, vehicle_brand,
+    channel_id
+    from parking_snap_info
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryAllWithPage" parameterType="com.drzk.parkingguide.vo.ParkingSnapInfoVo" resultMap="BaseResultMapVo">
+    select id, create_date, update_date, camera_id, camera_ip, camera_type, plate_no,
+    plate_type, plate_color, vehicle_color, vehicle_type, vehicle_size, vehicle_brand,
+    channel_id
+    from parking_snap_info
+    where 1=1
+    <if test="plateNo!=null and plateNo!=''">
+      and plate_no like concat(concat('%',#{plateNo}),'%')
+    </if>
+    <choose>
+      <when test="timeRangeBegin==null or timeRangeEnd==null">
+        and create_date between date_sub(now(), interval 1 month) and now()
+      </when>
+      <otherwise>
+        and create_date between #{timeRangeBegin,jdbcType=TIMESTAMP} and #{timeRangeEnd,jdbcType=TIMESTAMP}
+      </otherwise>
+    </choose>
+    order by create_date desc
+  </select>
+
+  <update id="updateById" parameterType="com.drzk.parkingguide.po.ParkingSnapInfoPo">
+    update parking_snap_info
+    set update_date = now(),
+      camera_id = #{cameraId,jdbcType=VARCHAR},
+      camera_ip = #{cameraIp,jdbcType=VARCHAR},
+      camera_type = #{cameraType,jdbcType=VARCHAR},
+      plate_no = #{plateNo,jdbcType=VARCHAR},
+      plate_type = #{plateType,jdbcType=VARCHAR},
+      plate_color = #{plateColor,jdbcType=VARCHAR},
+      vehicle_color = #{vehicleColor,jdbcType=VARCHAR},
+      vehicle_type = #{vehicleType,jdbcType=VARCHAR},
+      vehicle_size = #{vehicleSize,jdbcType=VARCHAR},
+      vehicle_brand = #{vehicleBrand,jdbcType=VARCHAR},
+      channel_id = #{channelId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deleteByIdBatch" parameterType="list">
+    delete from parking_snap_info
+    where id in
+    <foreach collection="list" open="(" close=")" separator="," item="item">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+  
+  <select id="regionVehicleFlowStatistics" parameterType="com.drzk.parkingguide.vo.StatisticsVo" resultMap="StatisticsVo">
+    select DATE_FORMAT(create_date,'%Y-%m-%d') date, count(*) count
+    from (
+      select aaa.create_date
+      from parking_snap_info aaa
+      inner join parking_device bbb on aaa.camera_id = bbb.id
+      where 1=1
+      <choose>
+        <when test="days!=null">
+          and aaa.create_date BETWEEN DATE_SUB(CURDATE(),INTERVAL #{days,jdbcType=INTEGER} DAY) and DATE_FORMAT(CURDATE(),'%Y-%m-%d')
+        </when>
+        <otherwise>
+          and aaa.create_date BETWEEN DATE_SUB(CURDATE(),INTERVAL 7 DAY) and DATE_FORMAT(CURDATE(),'%Y-%m-%d')
+        </otherwise>
+      </choose>
+      <if test="cameraType!=null and cameraType!=''">
+        and aaa.camera_type = #{cameraType,jdbcType=VARCHAR}
+      </if>
+      <if test="regionId!=null and regionId!=''">
+        and bbb.region_id = #{regionId,jdbcType=VARCHAR}
+      </if>
+    )t
+    group by date order by date asc
+  </select>
+
+
+
+
+
+
+
+
+
+
+</mapper>

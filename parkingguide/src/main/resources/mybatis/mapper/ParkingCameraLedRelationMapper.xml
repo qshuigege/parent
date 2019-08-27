@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingCameraLedRelationDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingCameraLedRelationPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="camera_id" jdbcType="VARCHAR" property="cameraId" />
+    <result column="led_part_id" jdbcType="VARCHAR" property="ledPartId" />
+    <result column="publish_state" jdbcType="VARCHAR" property="publishState" />
+  </resultMap>
+
+  <select id="queryAll" resultMap="BaseResultMap">
+    select id, create_date, camera_id, led_part_id, publish_state
+    from parking_camera_led_relation
+  </select>
+
+  <delete id="deleteByCamIdAndLedId" parameterType="com.drzk.parkingguide.po.ParkingCameraLedRelationPo">
+    delete from parking_camera_led_relation
+    where camera_id = #{cameraId,jdbcType=VARCHAR} and led_part_id = #{ledPartId,jdbcType=VARCHAR}
+  </delete>
+
+  <select id="queryByCameraIds" parameterType="list" resultMap="BaseResultMap">
+    select * from parking_camera_led_relation
+    where camera_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item.cameraId,jdbcType=VARCHAR}
+    </foreach>
+  </select>
+
+  <insert id="insertBatch" parameterType="list">
+    insert into parking_camera_led_relation (id, create_date, camera_id,
+      led_part_id, publish_state)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (uuid(), now(), #{item.cameraId,jdbcType=VARCHAR},
+      #{item.ledPartId,jdbcType=VARCHAR}, #{item.publishState,jdbcType=INTEGER})
+    </foreach>
+
+  </insert>
+
+  <select id="queryAllPublishedDevices" resultMap="BaseResultMap">
+    select * from parking_camera_led_relation where publish_state = 1
+  </select>
+
+
+
+
+
+
+</mapper>

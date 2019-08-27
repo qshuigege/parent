@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingSettingsDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingSettingsPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="option_key" jdbcType="VARCHAR" property="optionKey" />
+    <result column="option_value" jdbcType="VARCHAR" property="optionValue" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.drzk.parkingguide.po.ParkingSettingsPo">
+    insert into parking_settings (id, create_date, update_date,
+      option_key, option_value, comment
+      )
+    values (uuid(), now(), null,
+      #{optionKey,jdbcType=VARCHAR}, #{optionValue,jdbcType=VARCHAR}, #{comment,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <select id="queryById" parameterType="com.drzk.parkingguide.po.ParkingSettingsPo" resultMap="BaseResultMap">
+    select id, create_date, update_date, option_key, option_value, comment
+    from parking_settings
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryAllWithPage" parameterType="com.drzk.parkingguide.vo.ParkingSettingsVo" resultMap="BaseResultMap">
+    select id, create_date, update_date, option_key, option_value, comment
+    from parking_settings
+    order by create_date desc
+  </select>
+
+  <update id="updateById" parameterType="com.drzk.parkingguide.po.ParkingSettingsPo">
+    update parking_settings
+    set update_date = now(),
+      option_key = #{optionKey,jdbcType=VARCHAR},
+      option_value = #{optionValue,jdbcType=VARCHAR},
+      comment = #{comment,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateByOptionKey" parameterType="com.drzk.parkingguide.vo.ParkingSettingsVo">
+    update parking_settings
+    set update_date = now(),
+      option_value = #{optionValue,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+    and option_key = #{optionKey,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deleteByIdBatch" parameterType="list">
+    delete from parking_settings
+    where id in
+    <foreach collection="list" open="(" close=")" separator="," item="item">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+
+
+
+
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingFileUploadDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingFileUploadPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="region_id" jdbcType="VARCHAR" property="regionId" />
+  </resultMap>
+  <resultMap id="BaseResultMapVo" type="com.drzk.parkingguide.vo.ParkingFileUploadVo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="region_id" jdbcType="VARCHAR" property="regionId" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.drzk.parkingguide.po.ParkingFileUploadPo">
+    insert into parking_file_upload (id, create_date, update_date,
+      file_name, region_id)
+    values (#{id,jdbcType=VARCHAR}, now(), null,
+      #{fileName,jdbcType=VARCHAR}, #{regionId,jdbcType=VARCHAR})
+  </insert>
+
+
+
+  <select id="getUploadFileByRegionId" parameterType="com.drzk.parkingguide.vo.ParkingFileUploadVo" resultMap="BaseResultMapVo">
+    select * from parking_file_upload where region_id = #{regionId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryById" parameterType="com.drzk.parkingguide.vo.ParkingFileUploadVo" resultMap="BaseResultMapVo">
+    select * from parking_file_upload where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from parking_file_upload
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <update id="updateByPrimaryKey" parameterType="com.drzk.parkingguide.po.ParkingFileUploadPo">
+    update parking_file_upload
+    set create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      region_id = #{regionId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, create_date, update_date, file_name, region_id
+    from parking_file_upload
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, create_date, update_date, file_name, region_id
+    from parking_file_upload
+  </select>
+</mapper>

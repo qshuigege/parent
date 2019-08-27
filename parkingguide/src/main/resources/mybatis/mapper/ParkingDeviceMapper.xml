@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drzk.parkingguide.dao.ParkingDeviceDao">
+  <resultMap id="BaseResultMap" type="com.drzk.parkingguide.po.ParkingDevicePo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+    <result column="device_type" jdbcType="VARCHAR" property="deviceType" />
+    <result column="device_brand" jdbcType="VARCHAR" property="deviceBrand" />
+    <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
+    <result column="device_port" jdbcType="INTEGER" property="devicePort" />
+    <result column="device_acc" jdbcType="VARCHAR" property="deviceAcc" />
+    <result column="device_pwd" jdbcType="VARCHAR" property="devicePwd" />
+    <result column="floor_id" jdbcType="VARCHAR" property="floorId" />
+    <result column="region_id" jdbcType="VARCHAR" property="regionId" />
+    <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
+    <result column="camera_type" jdbcType="VARCHAR" property="cameraType" />
+    <result column="led_rownum" jdbcType="INTEGER" property="ledRownum" />
+    <result column="led_type" jdbcType="VARCHAR" property="ledType" />
+    <result column="led_group_id" jdbcType="VARCHAR" property="ledGroupId" />
+    <result column="led_group_name" jdbcType="VARCHAR" property="ledGroupName" />
+    <result column="screen_brightness" jdbcType="INTEGER" property="screenBrightness" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="led_part_num" jdbcType="VARCHAR" property="ledPartNum" />
+  </resultMap>
+  <resultMap id="BaseResultMapVo" type="com.drzk.parkingguide.vo.ParkingDeviceVo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+    <result column="device_type" jdbcType="VARCHAR" property="deviceType" />
+    <result column="device_brand" jdbcType="VARCHAR" property="deviceBrand" />
+    <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
+    <result column="device_port" jdbcType="INTEGER" property="devicePort" />
+    <result column="device_acc" jdbcType="VARCHAR" property="deviceAcc" />
+    <result column="device_pwd" jdbcType="VARCHAR" property="devicePwd" />
+    <result column="floor_id" jdbcType="VARCHAR" property="floorId" />
+    <result column="region_id" jdbcType="VARCHAR" property="regionId" />
+    <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
+    <result column="camera_type" jdbcType="VARCHAR" property="cameraType" />
+    <result column="led_rownum" jdbcType="INTEGER" property="ledRownum" />
+    <result column="led_type" jdbcType="VARCHAR" property="ledType" />
+    <result column="led_group_id" jdbcType="VARCHAR" property="ledGroupId" />
+    <result column="led_group_name" jdbcType="VARCHAR" property="ledGroupName" />
+    <result column="screen_brightness" jdbcType="INTEGER" property="screenBrightness" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="r_remain" jdbcType="VARCHAR" property="regionRemainPlaces" />
+    <result column="f_remain" jdbcType="VARCHAR" property="floorRemainPlaces" />
+    <result column="led_part_num" jdbcType="VARCHAR" property="ledPartNum" />
+    <result column="floor_name" jdbcType="VARCHAR" property="floorName" />
+    <result column="region_name" jdbcType="VARCHAR" property="regionName" />
+  </resultMap>
+
+
+  <select id="queryParkingDevicePage" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo" resultMap="BaseResultMapVo">
+    select aaa.id, aaa.create_date, aaa.update_date, aaa.device_name, aaa.device_type, aaa.device_brand, aaa.device_ip,
+    aaa.device_port, aaa.device_acc, aaa.device_pwd, aaa.floor_id, aaa.region_id, aaa.channel_id, aaa.camera_type,
+    aaa.led_rownum, aaa.led_type, aaa.led_part_num, aaa.led_group_id, aaa.led_group_name,
+    case when aaa.screen_brightness in(1,2,3) then 1 when aaa.screen_brightness in(4,5,6) then 2 when aaa.screen_brightness in(7,8,9) then 3 else null end screen_brightness,
+    aaa.status, aaa.memo, bbb.remain_places f_remain, ccc.remain_places r_remain, bbb.floor_name, ccc.region_name
+    from parking_device aaa
+    left join parking_floor bbb on aaa.floor_id = bbb.id
+    left join parking_region ccc on aaa.region_id = ccc.id
+    where 1=1
+    <if test="deviceName!=null and deviceName!=''">
+      and aaa.device_name like concat(concat('%',#{deviceName}),'%')
+    </if>
+    <if test="deviceIp!=null and deviceIp!=''">
+      and device_ip like concat(concat('%',#{deviceIp}),'%')
+    </if>
+    <if test="deviceType!=null and deviceType!=''">
+      and aaa.device_type = #{deviceType}
+    </if>
+    <if test="regionId!=null and regionId!=''">
+      and aaa.region_id = #{regionId}
+    </if>
+    <if test="floorId!=null and floorId!=''">
+      and aaa.floor_id = #{floorId}
+    </if>
+    <if test="ledType!=null and ledType!=''">
+      and aaa.led_type = #{ledType}
+    </if>
+    order by aaa.create_date desc
+  </select>
+
+    <update id="updateById" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo">
+    update parking_device
+    set update_date = now(),
+      device_name = #{deviceName,jdbcType=VARCHAR},
+      device_type = #{deviceType,jdbcType=VARCHAR},
+      device_brand = #{deviceBrand,jdbcType=VARCHAR},
+      device_ip = #{deviceIp,jdbcType=VARCHAR},
+      device_port = #{devicePort,jdbcType=INTEGER},
+      device_acc = #{deviceAcc,jdbcType=VARCHAR},
+      device_pwd = #{devicePwd,jdbcType=VARCHAR},
+      floor_id = #{floorId,jdbcType=VARCHAR},
+      region_id = #{regionId,jdbcType=VARCHAR},
+      channel_id = #{channelId,jdbcType=VARCHAR},
+      led_rownum = #{ledRownum,jdbcType=INTEGER},
+      led_type = #{ledType,jdbcType=VARCHAR},
+      led_group_id = #{ledGroupId,jdbcType=VARCHAR},
+      led_group_name = #{ledGroupName,jdbcType=VARCHAR},
+      screen_brightness = #{screenBrightness,jdbcType=INTEGER},
+      memo = #{memo,jdbcType=VARCHAR},
+      led_part_num = #{ledPartNum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+    <update id="updateCameraById" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo">
+    update parking_device
+    set update_date = now(),
+      device_name = #{deviceName,jdbcType=VARCHAR},
+      device_brand = #{deviceBrand,jdbcType=VARCHAR},
+      device_ip = #{deviceIp,jdbcType=VARCHAR},
+      device_port = #{devicePort,jdbcType=INTEGER},
+      device_acc = #{deviceAcc,jdbcType=VARCHAR},
+      device_pwd = #{devicePwd,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+    <update id="updateLedById" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo">
+    update parking_device
+    set update_date = now(),
+      device_name = #{deviceName,jdbcType=VARCHAR},
+      device_type = #{deviceType,jdbcType=VARCHAR},
+      device_brand = #{deviceBrand,jdbcType=VARCHAR},
+      device_ip = #{deviceIp,jdbcType=VARCHAR},
+      device_port = #{devicePort,jdbcType=INTEGER},
+      floor_id = #{floorId,jdbcType=VARCHAR},
+      region_id = #{regionId,jdbcType=VARCHAR},
+      led_group_id = #{ledGroupId,jdbcType=VARCHAR},
+      led_group_name = #{ledGroupName,jdbcType=VARCHAR},
+      screen_brightness = #{screenBrightness,jdbcType=INTEGER},
+      memo = #{memo,jdbcType=VARCHAR},
+      led_part_num = #{ledPartNum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="addParkingDevice" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo">
+    insert into parking_device (id, create_date,
+      device_name, device_type, device_brand,
+      device_ip, device_port, device_acc,
+      device_pwd, floor_id, region_id,
+      channel_id, camera_type, led_rownum, led_type, led_group_id, led_part_num,
+      led_group_name, screen_brightness, status,
+      memo)
+    values (#{id,jdbcType=VARCHAR}, now(),
+      #{deviceName,jdbcType=VARCHAR}, #{deviceType,jdbcType=VARCHAR}, #{deviceBrand,jdbcType=VARCHAR},
+      #{deviceIp,jdbcType=VARCHAR}, #{devicePort,jdbcType=INTEGER}, #{deviceAcc,jdbcType=VARCHAR},
+      #{devicePwd,jdbcType=VARCHAR}, #{floorId,jdbcType=VARCHAR}, #{regionId,jdbcType=VARCHAR},
+      #{channelId,jdbcType=VARCHAR}, #{cameraType,jdbcType=VARCHAR}, #{ledRownum,jdbcType=INTEGER}, #{ledType,jdbcType=VARCHAR}, #{ledGroupId,jdbcType=VARCHAR}, #{ledPartNum,jdbcType=INTEGER},
+      #{ledGroupName,jdbcType=VARCHAR}, #{screenBrightness,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR},
+      #{memo,jdbcType=VARCHAR})
+  </insert>
+
+  <delete id="deleteByIdBatch" parameterType="list">
+    delete from parking_device
+    where id in
+    <foreach collection="list" open="(" close=")" separator="," item="item">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+
+  <select id="queryById" parameterType="com.drzk.parkingguide.po.ParkingDevicePo" resultMap="BaseResultMapVo">
+    select aaa.*, bbb.remain_places r_remain, ccc.remain_places f_remain
+    from parking_device aaa
+    left join parking_region bbb on aaa.region_id = bbb.id
+    left join parking_floor ccc on aaa.floor_id = ccc.id
+    where aaa.id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryByIds" parameterType="list" resultMap="BaseResultMapVo">
+    select aaa.*, bbb.remain_places r_remain, ccc.remain_places f_remain
+    from parking_device aaa
+    left join parking_region bbb on aaa.region_id = bbb.id
+    left join parking_floor ccc on aaa.floor_id = ccc.id
+    where aaa.id in
+    <foreach collection="list" item="item" separator="," open="(" close=")">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </select>
+
+  <select id="queryDevicesByBelongToRegionId" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo" resultMap="BaseResultMapVo">
+    select aaa.remain_places r_remain, bbb.id, bbb.device_ip, bbb.device_port, bbb.led_rownum, bbb.led_type
+    from parking_region aaa
+    inner join parking_device bbb on aaa.id = bbb.region_id
+    where aaa.id = #{regionId,jdbcType=VARCHAR}
+    <if test="deviceType!=null and deviceType!=''">
+      and bbb.device_type = #{deviceType,jdbcType=VARCHAR}
+    </if>
+    <if test="ledType!=null and ledType!=''">
+      and bbb.led_type = #{ledType,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <select id="queryDevicesByBelongToFloorId" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo" resultMap="BaseResultMapVo">
+    select aaa.remain_places f_remain, bbb.id, bbb.device_ip, bbb.device_port, bbb.led_rownum, bbb.led_type
+    from parking_floor aaa
+    inner join parking_device bbb on aaa.id = bbb.floor_id
+    where aaa.id = #{floorId,jdbcType=VARCHAR}
+    <if test="deviceType!=null and deviceType!=''">
+      and bbb.device_type = #{deviceType,jdbcType=VARCHAR}
+    </if>
+    <if test="ledType!=null and ledType!=''">
+      and bbb.led_type = #{ledType,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <update id="updateCameraStatusByCameraIdBatch" parameterType="list">
+    update parking_device
+    set status = #{list[0].status,jdbcType=VARCHAR}
+    where id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+
+  <update id="updateCameraLocationInfo" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo">
+    update parking_device
+    set channel_id = #{id} ,
+      region_id = (select region_id from parking_channel where id = #{id}),
+      floor_id = (select floor_id from parking_channel where id = #{id}),
+      camera_type = #{cameraType}
+    where id = #{cameraId}
+  </update>
+
+  <update id="updateLedRownum" parameterType="com.drzk.parkingguide.vo.ParkingChannelVo">
+    update parking_device
+    set led_rownum = #{ledRownum} ,
+      region_id = (select region_id from parking_channel where id = #{id}),
+      floor_id = (select floor_id from parking_channel where id = #{id})
+    where id = #{cameraId}
+  </update>
+
+  <update id="updateFloorIdAndLedRownumByLedPartId" parameterType="com.drzk.parkingguide.vo.ParkingPublishVo">
+    update parking_device
+    set floor_id = #{floorId},
+        led_rownum = #{ledRownum}
+    where id = #{ledPartId}
+  </update>
+  
+  <select id="queryByIdAndOtherCols" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo" resultMap="BaseResultMapVo">
+    select * from parking_device
+    where id = #{id}
+    <if test="floorId!=null and floorId!=''">
+      and floor_id = #{floorId}
+    </if>
+    <if test="regionId!=null and regionId!=''">
+      and region_id = #{regionId}
+    </if>
+    <if test="ledType!=null and ledType!=''">
+      and led_type = #{ledType}
+    </if>
+  </select>
+  
+  <select id="queryByDeviceIp" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo" resultType="int">
+    select count(0) count from parking_device where device_ip = #{deviceIp}
+  </select>
+
+  <update id="updateBelongToIdsAndCameraTypeToNullById" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo">
+    update parking_device
+    set floor_id = null,
+        region_id = null,
+        channel_id = null,
+        camera_type = null
+    where id = #{id}
+  </update>
+
+  <select id="queryUsableCamerasOfChannel" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo" resultMap="BaseResultMapVo">
+    select id, device_name from parking_device where (floor_id is null or floor_id='') and (region_id is null or region_id='') and (channel_id is null or channel_id='') and device_type = '1'
+  </select>
+
+  <update id="updateCameraConnStatusByIp" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo">
+    update parking_device set status = #{status} where device_ip = #{deviceIp}
+  </update>
+
+  <update id="updateCameraConnStatusById" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo">
+    update parking_device set status = #{status} where id = #{id}
+  </update>
+    
+  <select id="queryByCameraTypeAndId" parameterType="com.drzk.parkingguide.vo.ParkingDeviceVo" resultType="int">
+    select count(0) count from parking_device where id = #{id} and camera_type is not null
+  </select>
+
+
+
+</mapper>
