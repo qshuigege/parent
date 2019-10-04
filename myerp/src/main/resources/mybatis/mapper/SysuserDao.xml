@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fs.myerp.dao.SysuserDao">
+  <resultMap id="BaseResultMap" type="com.fs.myerp.po.SysuserPo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="enabled" jdbcType="BIT" property="enabled" />
+  </resultMap>
+
+  <select id="selectByUsername" parameterType="string" resultMap="BaseResultMap">
+    select * from sysuser where username = #{username}
+  </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from sysuser
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fs.myerp.po.SysuserPo">
+    insert into sysuser (id, username, password, 
+      nickname, enabled)
+    values (#{id,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{nickname,jdbcType=VARCHAR}, #{enabled,jdbcType=BIT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.fs.myerp.po.SysuserPo">
+    update sysuser
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      enabled = #{enabled,jdbcType=BIT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, username, password, nickname, enabled
+    from sysuser
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, username, password, nickname, enabled
+    from sysuser
+  </select>
+</mapper>
