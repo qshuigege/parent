@@ -226,4 +226,14 @@ public class TestController {
         }
     }
 
+    @GetMapping("/test/testSameUrl")
+    public JsonResponse testSameUrlGet(HttpServletRequest request){
+        return JsonResponse.success(request.getMethod());
+    }
+
+    @PostMapping("/test/testSameUrl")
+    public JsonResponse testSameUrlPost(HttpServletRequest request){
+        return JsonResponse.success(request.getMethod());
+    }
+
 }

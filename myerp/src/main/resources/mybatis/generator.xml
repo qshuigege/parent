@@ -55,7 +55,7 @@
         <!-- 必须要有的，使用这个配置链接数据库
             @TODO:是否可以扩展
          -->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql:///myerp" userId="root" password="root">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://vmcentos:3306/myerp" userId="root" password="root">
             <!-- 这里面可以设置property属性，每一个property属性都设置到配置的Driver上 -->
         </jdbcConnection>
 
@@ -172,7 +172,7 @@
             注意，table里面很多参数都是对javaModelGenerator，context等元素的默认属性的一个复写；
          -->
 
-        <table tableName="emp">
+        <table tableName="sysuser">
 
             <!-- 参考 javaModelGenerator 的 constructorBased属性-->
             <property name="constructorBased" value="false"/>

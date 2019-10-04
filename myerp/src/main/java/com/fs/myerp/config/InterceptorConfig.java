@@ -1,3 +1,4 @@
+/*
 package com.fs.myerp.config;
 
 import com.fs.myerp.bo.UserContext;
@@ -30,3 +31,4 @@ public class InterceptorConfig implements HandlerInterceptor {
         }
     }
 }
+*/
