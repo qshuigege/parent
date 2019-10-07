@@ -20,10 +20,10 @@ public class WebMvcConfigurerImpl implements WebMvcConfigurer {
                         "/**"
                 )//
                 .excludePathPatterns(
-                        "/static/**",//
-                        "/test/**",//
                         "/error",//
-                        "/login"
+                        "/static/**",//
+                        "/login",//
+                        "/test/**"
                 );
     }
 }
