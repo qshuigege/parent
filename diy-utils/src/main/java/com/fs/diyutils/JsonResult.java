@@ -8,8 +8,8 @@ public class JsonResult {
 
     private Object data;
 
-
-    private JsonResult(String result, String cause, Object data){
+    public JsonResult(){};
+    public JsonResult(String result, String cause, Object data){
         this.result = result;
         this.cause = cause;
         this.data = data;

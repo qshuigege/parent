@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-@EnableDiscoveryClient
+@EnableEurekaClient
 @EnableFeignClients
 @SpringBootApplication
 @RestController
@@ -61,6 +61,11 @@ public class EurekaConsumerApp2FeignApplication {
     @RequestMapping("/testMap")
     public JsonResult testMap(@RequestParam Map<String, Object> map){
         return JsonResult.success("", service.testMap(map));
+    }
+
+    @RequestMapping("/visitServiceTest")
+    public JsonResult visitServiceTest(){
+        return service.test();
     }
 
 }

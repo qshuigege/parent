@@ -1,3 +1,4 @@
+/*
 package com.fs.eurekaconsumerapp2feign.config.hystrix;
 
 import com.fs.diyutils.JsonResult;
@@ -25,10 +26,12 @@ public class ProducerServiceFeignClientHystrix implements FeignService {
         return "no hello2";
     }
 
-    /*@Override
+    */
+/*@Override
     public String testRequest(HttpServletRequest request) {
         return "testRequest error!";
-    }*/
+    }*//*
+
 
     @Override
     public String testRequest2(String name, String age) {
@@ -39,4 +42,4 @@ public class ProducerServiceFeignClientHystrix implements FeignService {
     public String testMap(Map<String, Object> map) {
         return "testMap error!-->map:"+map;
     }
-}
+}*/

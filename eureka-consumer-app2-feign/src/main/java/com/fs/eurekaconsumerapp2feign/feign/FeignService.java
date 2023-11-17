@@ -1,7 +1,6 @@
 package com.fs.eurekaconsumerapp2feign.feign;
 
 import com.fs.diyutils.JsonResult;
-import com.fs.eurekaconsumerapp2feign.config.hystrix.ProducerServiceFeignClientHystrix;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,8 +8,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-@FeignClient(name = "serviceApp1", fallback = ProducerServiceFeignClientHystrix.class)
+@FeignClient(name = "serviceApp1")
 public interface FeignService {
+    @RequestMapping("/test")
+    JsonResult test();
 
     @RequestMapping("/splitUtil")
     JsonResult splitUtil(String param);
